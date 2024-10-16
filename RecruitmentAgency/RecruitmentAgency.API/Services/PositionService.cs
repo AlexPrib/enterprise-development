@@ -3,7 +3,7 @@ using RecruitmentAgency.Domain;
 
 namespace RecruitmentAgency.API.Services;
 
-public class PositionService : IEntityService<Position, PositionCreateDTO, PositionDTO>
+public class PositionService : IEntityService<Position, PositionCreateDTO>
 {
     private readonly List<Position> _position = [];
 
@@ -36,16 +36,15 @@ public class PositionService : IEntityService<Position, PositionCreateDTO, Posit
         return true;
     }
 
-    public bool Update(PositionDTO updatedPosition)
+    public bool Update(int id, PositionCreateDTO updatedPosition)
     {
-        var position = GetById(updatedPosition.Id);
+        var position = GetById(id);
         if (position == null)
         {
             return false;
         }
         position.Section = updatedPosition.Section;
         position.PositionName = updatedPosition.PositionName;
-
         return true;
     }
 }

@@ -144,7 +144,7 @@ public class RecruitmentAgencyTest(RecruitmentAgencyFixture fixture) : IClassFix
         var employersWithMaxSalary = _fixture.EmployerApplications
             .Where(e => e.OfferedSalary == maxSalary)
             .Select(e => e.Employer)
-            .Distinct()
+            .Take(5)
             .ToList();
 
         Assert.Equal(expectedData, employersWithMaxSalary);

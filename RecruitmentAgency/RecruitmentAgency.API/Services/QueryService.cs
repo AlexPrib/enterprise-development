@@ -33,10 +33,16 @@ public class QueryService(ApplicantApplicationService applicantapplicationServic
                   (applicantApp, employerApp) => new { ApplicantApp = applicantApp, EmployerApp = employerApp })
             .Where(a => a.EmployerApp.Id == employerApplicationId &&
                         a.ApplicantApp.Applicant.Salaries <= a.EmployerApp.OfferedSalary)
-            .Select(a => new ApplicantsForEmployerApplicationDTO { applicant = a.ApplicantApp.Applicant, EmployerApp = a.EmployerApp })
+            .Select(a => new ApplicantsForEmployerApplicationDTO
+            {
+                ApplicantId = a.ApplicantApp.Applicant.Id,
+                EmployerAppId = a.EmployerApp.Id
+            })
             .ToList();
+
         return applicantsForEmployer;
     }
+
 
     public List<ApplicationStatisticsDTO> GetApplicationCountBySectionAndPositionAll()
     {
@@ -83,8 +89,6 @@ public class QueryService(ApplicantApplicationService applicantapplicationServic
     public List<Employer> GetEmployersWithMaxSalaryApplications()
     {
         var maxSalary = employerapplicationService.GetAll().Max(e => e.OfferedSalary);
-
-
         var employersWithMaxSalary = employerapplicationService.GetAll()
             .Where(e => e.OfferedSalary == maxSalary)
             .Select(e => e.Employer)

@@ -10,10 +10,8 @@ namespace RecruitmentAgency.API.Controllers
     /// </summary>
     [Route("api/[controller]")]
     [ApiController]
-    public class ApplicantsController(ApplicantsService applicantsService) : ControllerBase
+    public class ApplicantsController(ApplicantsService service) : ControllerBase
     {
-        private readonly ApplicantsService _applicantsService = applicantsService;
-
         /// <summary>
         /// Получает список всех соискателей.
         /// </summary>
@@ -22,8 +20,7 @@ namespace RecruitmentAgency.API.Controllers
         [HttpGet]
         public ActionResult<IEnumerable<Applicant>> Get()
         {
-            var applicants = _applicantsService.GetAll();
-            return Ok(applicants);
+            return Ok(service.GetAll());
         }
 
         /// <summary>
@@ -36,7 +33,7 @@ namespace RecruitmentAgency.API.Controllers
         [HttpGet("{id}")]
         public ActionResult<Applicant> Get(int id)
         {
-            var applicant = _applicantsService.GetById(id);
+            var applicant = service.GetById(id);
             if (applicant == null)
             {
                 return NotFound("Соискатель не найден.");
@@ -50,17 +47,16 @@ namespace RecruitmentAgency.API.Controllers
         /// <param name="newApplicant">Данные для создания нового соискателя.</param>
         /// <returns>Результат операции.</returns>
         /// <response code="201">Соискатель успешно создан.</response>
-        /// <response code="400">Данные соискателя недействительны.</response>
+        /// <response code="404">Данные соискателя недействительны.</response>
         [HttpPost]
         public ActionResult Post(ApplicantCreateDTO newApplicant)
         {
-            if (!ModelState.IsValid)
+            var result = service.Add(newApplicant);
+            if (!result)
             {
-                return BadRequest(ModelState);
+                return NotFound();
             }
-
-            _applicantsService.Add(newApplicant);
-            return CreatedAtAction(nameof(Get), newApplicant);
+            return Ok();
         }
 
         /// <summary>
@@ -69,24 +65,17 @@ namespace RecruitmentAgency.API.Controllers
         /// <param name="id">Идентификатор соискателя, которого нужно обновить.</param>
         /// <param name="updatedApplicant">Обновлённая информация о соискателе.</param>
         /// <returns>Результат операции.</returns>
-        /// <response code="204">Соискатель успешно обновлён.</response>
-        /// <response code="400">ID не совпадают или данные недействительны.</response>
+        /// <response code="200">Соискатель успешно обновлён.</response>
         /// <response code="404">Соискатель с указанным идентификатором не найден.</response>
         [HttpPut("{id}")]
-        public ActionResult Put(int id, ApplicantDTO updatedApplicant)
+        public ActionResult Put(int id, ApplicantCreateDTO updatedApplicant)
         {
-            if (id != updatedApplicant.Id)
-            {
-                return BadRequest("ID не совпадают.");
-            }
-
-            var result = _applicantsService.Update(updatedApplicant);
+            var result = service.Update(id, updatedApplicant);
             if (!result)
             {
                 return NotFound("Соискатель не найден.");
             }
-
-            return NoContent();
+            return Ok();
         }
 
         /// <summary>
@@ -99,7 +88,7 @@ namespace RecruitmentAgency.API.Controllers
         [HttpDelete("{id}")]
         public ActionResult Delete(int id)
         {
-            var result = _applicantsService.Delete(id);
+            var result = service.Delete(id);
             if (!result)
             {
                 return NotFound("Соискатель не найден.");

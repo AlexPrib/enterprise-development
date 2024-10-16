@@ -1,6 +1,4 @@
-﻿using RecruitmentAgency.Domain;
-
-namespace RecruitmentAgency.API.DTO;
+﻿namespace RecruitmentAgency.API.DTO;
 /// <summary>
 /// DTO описывающее соискателя и заявку работодателя
 /// </summary>
@@ -9,9 +7,9 @@ public class ApplicantsForEmployerApplicationDTO
     /// <summary>
     /// Соискатель
     /// </summary>
-    public required Applicant applicant;
+    public required int ApplicantId { get; set; }
     /// <summary>
     /// Заявка работодателя
     /// </summary>
-    public required EmployerApplication EmployerApp;
+    public required int EmployerAppId { get; set; }
 }

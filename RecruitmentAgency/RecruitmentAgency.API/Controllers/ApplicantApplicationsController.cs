@@ -10,10 +10,8 @@ namespace RecruitmentAgency.API.Controllers;
 /// </summary>
 [Route("api/[controller]")]
 [ApiController]
-public class ApplicantApplicationsController(ApplicantApplicationService applicantApplicationService) : ControllerBase
+public class ApplicantApplicationsController(ApplicantApplicationService service) : ControllerBase
 {
-    private readonly ApplicantApplicationService _applicantApplicationService = applicantApplicationService;
-
     /// <summary>
     /// Получает все заявки соискателей.
     /// </summary>
@@ -22,8 +20,7 @@ public class ApplicantApplicationsController(ApplicantApplicationService applica
     [HttpGet]
     public ActionResult<IEnumerable<ApplicantApplication>> Get()
     {
-        var applicantApplications = _applicantApplicationService.GetAll();
-        return Ok(applicantApplications);
+        return Ok(service.GetAll());
     }
 
     /// <summary>
@@ -36,7 +33,7 @@ public class ApplicantApplicationsController(ApplicantApplicationService applica
     [HttpGet("{id}")]
     public ActionResult<ApplicantApplication> Get(int id)
     {
-        var applicantApplication = _applicantApplicationService.GetById(id);
+        var applicantApplication = service.GetById(id);
         if (applicantApplication == null)
         {
             return NotFound();
@@ -49,49 +46,37 @@ public class ApplicantApplicationsController(ApplicantApplicationService applica
     /// </summary>
     /// <param name="newApplicantApplication">Данные для создания новой заявки.</param>
     /// <returns>Результат операции.</returns>
-    /// <response code="201">Заявка успешно создана.</response>
+    /// <response code="200">Заявка успешно создана.</response>
     /// <response code="400">Данные заявки недействительны.</response>
     [HttpPost]
     public ActionResult Post(ApplicantApplicationCreateDTO newApplicantApplication)
     {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
-
-        var result = _applicantApplicationService.Add(newApplicantApplication);
+        var result = service.Add(newApplicantApplication);
         if (!result)
         {
             return BadRequest("Не удалось создать заявку. Проверьте данные.");
         }
 
-        return CreatedAtAction(nameof(Get), new { id = newApplicantApplication.ApplicantId }, newApplicantApplication);
+        return Ok();
     }
 
     /// <summary>
     /// Обновляет информацию о существующей заявке.
     /// </summary>
-    /// <param name="id">Идентификатор заявки, которую необходимо обновить.</param>
+    /// <param name="id">Идентификатор заявки соискателя.</param>
     /// <param name="updatedApplicantApplication">Обновлённая информация о заявке.</param>
     /// <returns>Результат операции.</returns>
-    /// <response code="204">Заявка успешно обновлена.</response>
-    /// <response code="400">ID не совпадают или данные недействительны.</response>
+    /// <response code="200">Заявка успешно обновлена.</response>
     /// <response code="404">Заявка с указанным идентификатором не найдена.</response>
-    [HttpPut("{id}")]
-    public ActionResult Put(int id, ApplicantApplicantDTO updatedApplicantApplication)
+    [HttpPut]
+    public ActionResult Put(int id, ApplicantApplicationCreateDTO updatedApplicantApplication)
     {
-        if (id != updatedApplicantApplication.Id)
-        {
-            return BadRequest("ID не совпадают.");
-        }
-
-        var result = _applicantApplicationService.Update(updatedApplicantApplication);
+        var result = service.Update(id, updatedApplicantApplication);
         if (!result)
         {
             return NotFound("Заявка не найдена.");
         }
-
-        return NoContent();
+        return Ok();
     }
 
     /// <summary>
@@ -104,7 +89,7 @@ public class ApplicantApplicationsController(ApplicantApplicationService applica
     [HttpDelete("{id}")]
     public ActionResult Delete(int id)
     {
-        var result = _applicantApplicationService.Delete(id);
+        var result = service.Delete(id);
         if (!result)
         {
             return NotFound("Заявка не найдена.");

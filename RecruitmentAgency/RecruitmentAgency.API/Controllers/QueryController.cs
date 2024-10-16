@@ -82,11 +82,16 @@ namespace RecruitmentAgency.API.Controllers
         /// Получает работодателей с максимальными зарплатами по заявкам.
         /// </summary>
         /// <returns>Список работодателей с максимальными зарплатами.</returns>
+        /// <response code="400">Список работодателей отсутствует.</response>
         /// <response code="200">Список работодателей успешно возвращён.</response>
         [HttpGet("employers/max-salary")]
         public ActionResult<List<Employer>> GetEmployersWithMaxSalaryApplications()
         {
             var employers = _queryService.GetEmployersWithMaxSalaryApplications();
+            if (employers == null)
+            {
+                return BadRequest("Нет работодателей");
+            }
             return Ok(employers);
         }
     }

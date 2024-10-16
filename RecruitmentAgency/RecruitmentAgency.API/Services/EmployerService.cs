@@ -3,7 +3,7 @@ using RecruitmentAgency.Domain;
 
 namespace RecruitmentAgency.API.Services;
 
-public class EmployerService : IEntityService<Employer, EmployerCreateDTO, EmployerDTO>
+public class EmployerService : IEntityService<Employer, EmployerCreateDTO>
 {
     private readonly List<Employer> _employer = [];
 
@@ -37,9 +37,9 @@ public class EmployerService : IEntityService<Employer, EmployerCreateDTO, Emplo
         return true;
     }
 
-    public bool Update(EmployerDTO updatedEmployer)
+    public bool Update(int id, EmployerCreateDTO updatedEmployer)
     {
-        var employer = GetById(updatedEmployer.Id);
+        var employer = GetById(id);
         if (employer == null)
         {
             return false;
