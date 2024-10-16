@@ -43,7 +43,6 @@ public class QueryService(ApplicantApplicationService applicantapplicationServic
         return applicantsForEmployer;
     }
 
-
     public List<ApplicationStatisticsDTO> GetApplicationCountBySectionAndPositionAll()
     {
         var applicationStatistics = applicantapplicationService.GetAll()
