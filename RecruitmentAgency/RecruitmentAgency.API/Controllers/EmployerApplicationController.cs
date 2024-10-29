@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using RecruitmentAgency.API.DTO;
 using RecruitmentAgency.API.Services;
-using RecruitmentAgency.Domain;
+using RecruitmentAgency.Domain.Entity;
 
 namespace RecruitmentAgency.API.Controllers
 {
@@ -10,7 +10,7 @@ namespace RecruitmentAgency.API.Controllers
     /// </summary>
     [Route("api/[controller]")]
     [ApiController]
-    public class EmployerApplicationController(EmployerApplicationService service) : ControllerBase
+    public class EmployerApplicationController(IEntityService<EmployerApplicationDTO, EmployerApplicationCreateDTO> service) : ControllerBase
     {
         /// <summary>
         /// Возвращает список всех заявок работодателей.
@@ -52,7 +52,7 @@ namespace RecruitmentAgency.API.Controllers
         public ActionResult Post(EmployerApplicationCreateDTO newEmployerApplication)
         {
             var result = service.Add(newEmployerApplication);
-            if (!result)
+            if (result == null)
             {
                 return BadRequest("Ошибка при добавлении заявки. Проверьте корректность данных.");
             }
@@ -72,7 +72,7 @@ namespace RecruitmentAgency.API.Controllers
         public ActionResult Put(int id, EmployerApplicationCreateDTO updatedEmployerApplication)
         {
             var result = service.Update(id, updatedEmployerApplication);
-            if (!result)
+            if (result == null)
             {
                 return NotFound("Заявка с указанным идентификатором не найдена.");
             }

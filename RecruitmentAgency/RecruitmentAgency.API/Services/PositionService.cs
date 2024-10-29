@@ -1,50 +1,38 @@
-﻿using RecruitmentAgency.API.DTO;
-using RecruitmentAgency.Domain;
+﻿using AutoMapper;
+using RecruitmentAgency.API.DTO;
+using RecruitmentAgency.Domain.Entity;
+using RecruitmentAgency.Domain.Repositories;
 
 namespace RecruitmentAgency.API.Services;
 
-public class PositionService : IEntityService<Position, PositionCreateDTO>
+public class PositionService(IEntityRepository<Position> repository, IMapper mapper) : IEntityService<PositionDTO, PositionCreateDTO>
 {
-    private readonly List<Position> _position = [];
+    public IEnumerable<PositionDTO> GetAll() => repository.GetAll().Select(mapper.Map<PositionDTO>);
 
-    private int _id = 1;
+    public PositionDTO? GetById(int id) => mapper.Map<PositionDTO>(repository.GetById(id));
 
-    public List<Position> GetAll() => _position;
-
-    public Position? GetById(int id) => _position.FirstOrDefault(o => o.Id == id);
-
-    public bool Add(PositionCreateDTO newPosition)
-    {
-        var position = new Position
-        {
-            Id = _id++,
-            Section = newPosition.Section,
-            PositionName = newPosition.PositionName
-        };
-        _position.Add(position);
-        return true;
-    }
+    public PositionDTO Add(PositionCreateDTO newPosition) => mapper.Map<PositionDTO>(repository.Add(mapper.Map<Position>(newPosition)));
 
     public bool Delete(int id)
     {
-        var position = GetById(id);
+        var position = repository.GetById(id);
         if (position == null)
         {
             return false;
         }
-        _position.Remove(position);
+        repository.Delete(position);
         return true;
     }
 
-    public bool Update(int id, PositionCreateDTO updatedPosition)
+    public PositionDTO? Update(int id, PositionCreateDTO updatedPosition)
     {
-        var position = GetById(id);
+        var position = repository.GetById(id);
         if (position == null)
         {
-            return false;
+            return null;
         }
         position.Section = updatedPosition.Section;
         position.PositionName = updatedPosition.PositionName;
-        return true;
+        return mapper.Map<PositionDTO>(repository.Update(position));
     }
 }

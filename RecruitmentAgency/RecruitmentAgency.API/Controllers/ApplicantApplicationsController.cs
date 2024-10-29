@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using RecruitmentAgency.API.DTO;
 using RecruitmentAgency.API.Services;
-using RecruitmentAgency.Domain;
+using RecruitmentAgency.Domain.Entity;
 
 namespace RecruitmentAgency.API.Controllers;
 
@@ -10,7 +10,7 @@ namespace RecruitmentAgency.API.Controllers;
 /// </summary>
 [Route("api/[controller]")]
 [ApiController]
-public class ApplicantApplicationsController(ApplicantApplicationService service) : ControllerBase
+public class ApplicantApplicationsController(IEntityService<ApplicantApplicantDTO, ApplicantApplicationCreateDTO> service) : ControllerBase
 {
     /// <summary>
     /// Получает все заявки соискателей.
@@ -49,10 +49,10 @@ public class ApplicantApplicationsController(ApplicantApplicationService service
     /// <response code="200">Заявка успешно создана.</response>
     /// <response code="400">Данные заявки недействительны.</response>
     [HttpPost]
-    public ActionResult Post(ApplicantApplicationCreateDTO newApplicantApplication)
+    public ActionResult<ApplicantApplicantDTO> Post(ApplicantApplicationCreateDTO newApplicantApplication)
     {
         var result = service.Add(newApplicantApplication);
-        if (!result)
+        if (result == null)
         {
             return BadRequest("Не удалось создать заявку. Проверьте данные.");
         }
@@ -72,7 +72,7 @@ public class ApplicantApplicationsController(ApplicantApplicationService service
     public ActionResult Put(int id, ApplicantApplicationCreateDTO updatedApplicantApplication)
     {
         var result = service.Update(id, updatedApplicantApplication);
-        if (!result)
+        if (result == null)
         {
             return NotFound("Заявка не найдена.");
         }

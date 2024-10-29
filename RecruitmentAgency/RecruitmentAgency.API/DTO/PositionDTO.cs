@@ -1,8 +1,9 @@
-﻿namespace RecruitmentAgency.Domain;
+﻿namespace RecruitmentAgency.API.DTO;
+
 /// <summary>
-/// Должность
+/// DTO должности
 /// </summary>
-public class Position
+public class PositionDTO
 {
     /// <summary>
     /// Идентификатор должности

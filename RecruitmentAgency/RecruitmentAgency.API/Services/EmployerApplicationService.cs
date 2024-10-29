@@ -1,68 +1,64 @@
-﻿using RecruitmentAgency.API.DTO;
-using RecruitmentAgency.Domain;
+﻿using AutoMapper;
+using RecruitmentAgency.API.DTO;
+using RecruitmentAgency.Domain.Entity;
+using RecruitmentAgency.Domain.Repositories;
 
 namespace RecruitmentAgency.API.Services;
 
-public class EmployerApplicationService(EmployerService employerService, PositionService positionService) : IEntityService<EmployerApplication, EmployerApplicationCreateDTO>
+public class EmployerApplicationService(IEntityRepository<EmployerApplication> employerapplicationRepository, IEntityRepository<Employer> employerRepository, IEntityRepository<Position> positionRepository, IMapper mapper) : IEntityService<EmployerApplicationDTO, EmployerApplicationCreateDTO>
 {
-    private readonly List<EmployerApplication> _employerapplication = [];
+    public IEnumerable<EmployerApplicationDTO> GetAll() => employerapplicationRepository.GetAll().Select(mapper.Map<EmployerApplicationDTO>);
 
-    private int _id = 1;
+    public EmployerApplicationDTO? GetById(int id) => mapper.Map<EmployerApplicationDTO>(employerapplicationRepository.GetById(id));
 
-    public List<EmployerApplication> GetAll() => _employerapplication;
-
-    public EmployerApplication? GetById(int id) => _employerapplication.FirstOrDefault(o => o.Id == id);
-
-    public bool Add(EmployerApplicationCreateDTO newEmployerApplication)
+    public EmployerApplicationDTO? Add(EmployerApplicationCreateDTO newEmployerApplication)
     {
-        var employer = employerService.GetById(newEmployerApplication.EmployerId);
-        var position = positionService.GetById(newEmployerApplication.PositionId);
+        var employer = employerRepository.GetById(newEmployerApplication.EmployerId);
+        var position = positionRepository.GetById(newEmployerApplication.PositionId);
         if (employer == null || position == null)
         {
-            return false;
+            return null;
         }
-        var employerapplication = new EmployerApplication
+        var applicantapplication = new EmployerApplication
         {
-            Id = _id++,
             SubmissionDate = newEmployerApplication.SubmissionDate,
-            Employer = employer,
+            Employer =  employer,
             Position = position,
             Requirements = newEmployerApplication.Requirements,
             OfferedSalary = newEmployerApplication.OfferedSalary
         };
-        _employerapplication.Add(employerapplication);
-        return true;
+        return mapper.Map<EmployerApplicationDTO>(employerapplicationRepository.Add(applicantapplication));
     }
 
     public bool Delete(int id)
     {
-        var employerapplication = GetById(id);
+        var employerapplication = employerapplicationRepository.GetById(id);
         if (employerapplication == null)
         {
             return false;
         }
-        _employerapplication.Remove(employerapplication);
+        employerapplicationRepository.Delete(employerapplication);
         return true;
     }
 
-    public bool Update(int id, EmployerApplicationCreateDTO updatedEmployerApplicant)
+    public EmployerApplicationDTO? Update(int id, EmployerApplicationCreateDTO updatedEmployerApplication)
     {
-        var employerapplication = GetById(id);
+        var employerapplication = employerapplicationRepository.GetById(id);
         if (employerapplication == null)
         {
-            return false;
+            return null;
         }
-        var employer = employerService.GetById(updatedEmployerApplicant.EmployerId);
-        var position = positionService.GetById(updatedEmployerApplicant.PositionId);
+        var employer = employerRepository.GetById(updatedEmployerApplication.EmployerId);
+        var position = positionRepository.GetById(updatedEmployerApplication.PositionId);
         if (employer == null || position == null)
         {
-            return false;
+            return null;
         }
-        employerapplication.SubmissionDate = updatedEmployerApplicant.SubmissionDate;
+        employerapplication.SubmissionDate = updatedEmployerApplication.SubmissionDate;
         employerapplication.Employer = employer;
         employerapplication.Position = position;
-        employerapplication.Requirements = updatedEmployerApplicant.Requirements;
-        employerapplication.OfferedSalary = updatedEmployerApplicant.OfferedSalary;
-        return true;
+        employerapplication.Requirements = updatedEmployerApplication.Requirements;
+        employerapplication.OfferedSalary = updatedEmployerApplication.OfferedSalary;
+        return mapper.Map<EmployerApplicationDTO>(employerapplicationRepository.Update(employerapplication));
     }
 }

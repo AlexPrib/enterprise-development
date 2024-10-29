@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using RecruitmentAgency.API.DTO;
 using RecruitmentAgency.API.Services;
-using RecruitmentAgency.Domain;
+using RecruitmentAgency.Domain.Entity;
 
 namespace RecruitmentAgency.API.Controllers
 {
@@ -10,7 +10,7 @@ namespace RecruitmentAgency.API.Controllers
     /// </summary>
     [Route("api/[controller]")]
     [ApiController]
-    public class ApplicantsController(ApplicantsService service) : ControllerBase
+    public class ApplicantsController(IEntityService <ApplicantDTO, ApplicantCreateDTO> service) : ControllerBase
     {
         /// <summary>
         /// Получает список всех соискателей.
@@ -18,7 +18,7 @@ namespace RecruitmentAgency.API.Controllers
         /// <returns>Список всех соискателей.</returns>
         /// <response code="200">Соискатели успешно получены.</response>
         [HttpGet]
-        public ActionResult<IEnumerable<Applicant>> Get()
+        public ActionResult<IEnumerable<ApplicantDTO>> Get()
         {
             return Ok(service.GetAll());
         }
@@ -31,7 +31,7 @@ namespace RecruitmentAgency.API.Controllers
         /// <response code="200">Соискатель успешно найден.</response>
         /// <response code="404">Соискатель с указанным идентификатором не найден.</response>
         [HttpGet("{id}")]
-        public ActionResult<Applicant> Get(int id)
+        public ActionResult<ApplicantDTO> Get(int id)
         {
             var applicant = service.GetById(id);
             if (applicant == null)
@@ -49,15 +49,16 @@ namespace RecruitmentAgency.API.Controllers
         /// <response code="201">Соискатель успешно создан.</response>
         /// <response code="404">Данные соискателя недействительны.</response>
         [HttpPost]
-        public ActionResult Post(ApplicantCreateDTO newApplicant)
+        public ActionResult<ApplicantDTO> Post(ApplicantCreateDTO newApplicant)
         {
             var result = service.Add(newApplicant);
-            if (!result)
+            if (result == null)
             {
-                return NotFound();
+                return NotFound("Failed to create the applicant.");
             }
-            return Ok();
+            return CreatedAtAction(nameof(Get), new { id = result.Id }, result);
         }
+
 
         /// <summary>
         /// Обновляет информацию о существующем соискателе.
@@ -68,10 +69,10 @@ namespace RecruitmentAgency.API.Controllers
         /// <response code="200">Соискатель успешно обновлён.</response>
         /// <response code="404">Соискатель с указанным идентификатором не найден.</response>
         [HttpPut("{id}")]
-        public ActionResult Put(int id, ApplicantCreateDTO updatedApplicant)
+        public ActionResult<ApplicantDTO> Put(int id, ApplicantCreateDTO updatedApplicant)
         {
             var result = service.Update(id, updatedApplicant);
-            if (!result)
+            if (result == null)
             {
                 return NotFound("Соискатель не найден.");
             }

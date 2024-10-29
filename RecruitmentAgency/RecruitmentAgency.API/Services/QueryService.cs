@@ -1,35 +1,42 @@
-﻿using RecruitmentAgency.API.DTO;
-using RecruitmentAgency.Domain;
+﻿using AutoMapper;
+using RecruitmentAgency.API.DTO;
+using RecruitmentAgency.Domain.Entity;
+using RecruitmentAgency.Domain.Repositories;
 
 namespace RecruitmentAgency.API.Services;
 
-public class QueryService(ApplicantApplicationService applicantapplicationService, EmployerApplicationService employerapplicationService)
+public class QueryService(IEntityRepository<ApplicantApplication> applicantapplicationRepository, IEntityRepository<EmployerApplication> employerapplicationRepository, IMapper mapper) : IQueryService
 {
-    public List<Applicant> GetAllApplicantsByPositionOrderedByFullName(string positionName)
+    public List<ApplicantDTO> GetAllApplicantsByPositionOrderedByFullName(string positionName)
     {
-        var sortedApplicant = applicantapplicationService.GetAll()
+        return [.. applicantapplicationRepository.GetAll()
             .Where(a => a.Position.PositionName == positionName)
-            .Select(a => a.Applicant)
-            .OrderBy(a => a.FullName)
-            .ToList();
-        return sortedApplicant;
+            .Select(a => mapper.Map<ApplicantDTO>(a.Applicant))
+            .OrderBy(a => a.FullName)];
     }
 
-    public List<Applicant> GetAllApplicantsBySubmissionDateRange(DateTime startDate, DateTime endDate)
+    public List<ApplicantDTO> GetAllApplicantsBySubmissionDateRange(DateTime startDate, DateTime endDate)
     {
-        var applicantsInRange = applicantapplicationService.GetAll()
+        return applicantapplicationRepository.GetAll()
             .Where(a => a.SubmissionDate >= startDate && a.SubmissionDate <= endDate)
-            .Select(a => a.Applicant)
+            .Select(a => mapper.Map<ApplicantDTO>(a.Applicant))
             .ToList();
-        return applicantsInRange;
     }
+
 
     public List<ApplicantsForEmployerApplicationDTO> GetApplicantsForEmployerApplication(int employerApplicationId)
     {
-        var applicantsForEmployer = applicantapplicationService.GetAll()
-            .Join(employerapplicationService.GetAll(),
-                  applicantApp => applicantApp.Position,
-                  employerApp => employerApp.Position,
+        var applicantApplications = applicantapplicationRepository.GetAll()
+            .Where(app => app.Position != null) 
+            .ToList();
+
+        var employerApplications = employerapplicationRepository.GetAll()
+            .ToList(); 
+
+        var applicantsForEmployer = applicantApplications
+            .Join(employerApplications,
+                  applicantApp => applicantApp.Position.Id, 
+                  employerApp => employerApp.Position.Id,
                   (applicantApp, employerApp) => new { ApplicantApp = applicantApp, EmployerApp = employerApp })
             .Where(a => a.EmployerApp.Id == employerApplicationId &&
                         a.ApplicantApp.Applicant.Salaries <= a.EmployerApp.OfferedSalary)
@@ -45,32 +52,52 @@ public class QueryService(ApplicantApplicationService applicantapplicationServic
 
     public List<ApplicationStatisticsDTO> GetApplicationCountBySectionAndPositionAll()
     {
-        var applicationStatistics = applicantapplicationService.GetAll()
-            .GroupJoin(employerapplicationService.GetAll(),
-                       applicantApp => applicantApp.Position,
-                       employerApp => employerApp.Position,
-                       (applicantApp, employerApps) => new { ApplicantApp = applicantApp, EmployerApps = employerApps })
-            .SelectMany(
-                x => x.EmployerApps.DefaultIfEmpty(),
-                (applicantGroup, employerApp) => new { applicantGroup.ApplicantApp, EmployerApp = employerApp })
-            .GroupBy(g => new { g.ApplicantApp.Position.Section, g.ApplicantApp.Position.PositionName })
-            .Select(group => new ApplicationStatisticsDTO
+        var applicantApplications = applicantapplicationRepository.GetAll()
+                .GroupBy(app => new { app.Position.Section, app.Position.PositionName })
+                .Select(group => new
+                {
+                    group.Key.Section,
+                    group.Key.PositionName,
+                    ApplicantApplicationsCount = group.Count()
+                });
+
+        var employerApplications = employerapplicationRepository.GetAll()
+            .GroupBy(emp => new { emp.Position.Section, emp.Position.PositionName })
+            .Select(group => new
             {
-                Section = group.Key.Section,
-                PositionName = group.Key.PositionName,
-                EmployerApplicationsCount = group.Count(g => g.EmployerApp != null),
-                ApplicantApplicationsCount = group.Count(g => g.ApplicantApp != null)
+                group.Key.Section,
+                group.Key.PositionName,
+                EmployerApplicationsCount = group.Count()
+            });
+
+        var combinedStatistics = applicantApplications
+            .GroupJoin(employerApplications,
+                       applicantApp => new { applicantApp.Section, applicantApp.PositionName },
+                       employerApp => new { employerApp.Section, employerApp.PositionName },
+                       (applicantApp, employerApps) => new
+                       {
+                           applicantApp.Section,
+                           applicantApp.PositionName,
+                           applicantApp.ApplicantApplicationsCount,
+                           EmployerApplicationsCount = employerApps.Sum(e => e.EmployerApplicationsCount)
+                       })
+            .Select(stat => new ApplicationStatisticsDTO
+            {
+                Section = stat.Section,
+                PositionName = stat.PositionName,
+                ApplicantApplicationsCount = stat.ApplicantApplicationsCount,
+                EmployerApplicationsCount = stat.EmployerApplicationsCount
             })
             .OrderBy(stat => stat.Section)
             .ThenBy(stat => stat.PositionName)
             .ToList();
 
-        return applicationStatistics;
+        return combinedStatistics;
     }
 
     public List<TopEmployerDTO> GetTopEmployersByApplications()
     {
-        var topEmployers = employerapplicationService.GetAll()
+        var topEmployers = employerapplicationRepository.GetAll()
             .GroupBy(employerApp => employerApp.Id)
             .Select(group => new TopEmployerDTO
             {
@@ -85,15 +112,21 @@ public class QueryService(ApplicantApplicationService applicantapplicationServic
         return topEmployers;
     }
 
-    public List<Employer> GetEmployersWithMaxSalaryApplications()
+    public List<EmployerDTO> GetEmployersWithMaxSalaryApplications()
     {
-        var maxSalary = employerapplicationService.GetAll().Max(e => e.OfferedSalary);
-        var employersWithMaxSalary = employerapplicationService.GetAll()
+        var employerApplications = employerapplicationRepository.GetAll();
+
+        if (!employerApplications.Any())
+        {
+            return [];
+        }
+
+        var maxSalary = employerApplications.Max(e => e.OfferedSalary);
+
+        return employerApplications
             .Where(e => e.OfferedSalary == maxSalary)
-            .Select(e => e.Employer)
+            .Select(e => mapper.Map<EmployerDTO>(e.Employer))
             .Distinct()
             .ToList();
-
-        return employersWithMaxSalary;
     }
 }

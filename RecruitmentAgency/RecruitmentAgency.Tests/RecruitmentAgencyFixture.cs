@@ -1,4 +1,4 @@
-﻿using RecruitmentAgency.Domain;
+﻿using RecruitmentAgency.Domain.Entity;
 
 namespace RecruitmentAgency.Tests;
 

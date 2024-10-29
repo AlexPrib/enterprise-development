@@ -1,31 +1,30 @@
-﻿namespace RecruitmentAgency.API.Services;
-/// <summary>
-///  Интерфейс для сервисов сущностей
-/// </summary>
-public interface IEntityService<DTO, CreateDTO>
+﻿
+namespace RecruitmentAgency.Domain.Repositories;
+
+public interface IEntityRepository<T>
 {
     /// <summary>
     /// Получение всех сущностей
     /// </summary>
-    public IEnumerable<DTO> GetAll();
+    public IEnumerable<T> GetAll();
 
     /// <summary>
     /// Получение сущности при помощи id
     /// </summary>
-    DTO? GetById(int id);
+    public T? GetById(int id);
 
     /// <summary>
     /// Добавление сущности
     /// </summary>
-    DTO? Add(CreateDTO entity);
+    public T Add(T entity);
 
     /// <summary>
     /// Удаление сущности
     /// </summary>
-    bool Delete(int id);
+    public void Delete(T entity);
 
     /// <summary>
     /// Изменение сущности
     /// </summary>
-    DTO? Update(int id, CreateDTO updatedEntity);
+    public T Update(T entity);
 }

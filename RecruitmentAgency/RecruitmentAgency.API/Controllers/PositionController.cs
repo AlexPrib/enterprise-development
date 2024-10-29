@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using RecruitmentAgency.API.DTO;
-using RecruitmentAgency.Domain;
 using RecruitmentAgency.API.Services;
+using RecruitmentAgency.Domain.Entity;
 
 namespace RecruitmentAgency.API.Controllers
 {
@@ -10,7 +10,7 @@ namespace RecruitmentAgency.API.Controllers
     /// </summary>
     [Route("api/[controller]")]
     [ApiController]
-    public class PositionController(PositionService service) : ControllerBase
+    public class PositionController(IEntityService<PositionDTO, PositionCreateDTO> service) : ControllerBase
     {
         /// <summary>
         /// Возвращает список всех позиций.
@@ -18,7 +18,7 @@ namespace RecruitmentAgency.API.Controllers
         /// <returns>Список всех позиций.</returns>
         /// <response code="200">Список успешно возвращён.</response>
         [HttpGet]
-        public ActionResult<IEnumerable<Position>> Get()
+        public ActionResult<IEnumerable<PositionDTO>> Get()
         {
             return Ok(service.GetAll());
         }
@@ -31,7 +31,7 @@ namespace RecruitmentAgency.API.Controllers
         /// <response code="200">Позиция найдена и возвращена успешно.</response>
         /// <response code="404">Позиция с указанным идентификатором не найдена.</response>
         [HttpGet("{id}")]
-        public ActionResult<Position> Get(int id)
+        public ActionResult<PositionDTO> Get(int id)
         {
             var position = service.GetById(id);
             if (position == null)
@@ -49,14 +49,14 @@ namespace RecruitmentAgency.API.Controllers
         /// <response code="200">Позиция успешно добавлена.</response>
         /// <response code="400">Позиция не была добавлена.</response>
         [HttpPost]
-        public ActionResult Post(PositionCreateDTO newPosition)
+        public ActionResult<PositionDTO> Post(PositionCreateDTO newPosition)
         {
             var result = service.Add(newPosition);
-            if (!result)
+            if (result == null)
             {
-                return BadRequest("Ошибка при добавлении позиции. Проверьте корректность данных.");
+                return NotFound("Failed to create the position.");
             }
-            return Ok();
+            return CreatedAtAction(nameof(Get), new { id = result.Id }, result);
         }
 
         /// <summary>
@@ -68,10 +68,10 @@ namespace RecruitmentAgency.API.Controllers
         /// <response code="200">Позиция успешно обновлена.</response>
         /// <response code="404">Позиция с указанным идентификатором не найдена.</response>
         [HttpPut]
-        public ActionResult Put(int id, PositionCreateDTO updatedPosition)
+        public ActionResult<PositionDTO> Put(int id, PositionCreateDTO updatedPosition)
         {
             var result = service.Update(id, updatedPosition);
-            if (!result)
+            if (result == null)
             {
                 return NotFound("Позиция с указанным идентификатором не найдена.");
             }

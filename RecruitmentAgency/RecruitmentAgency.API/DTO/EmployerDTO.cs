@@ -1,8 +1,9 @@
-﻿namespace RecruitmentAgency.Domain;
-///<summary>
-///Работодатель
-///</summary>
-public class Employer
+﻿namespace RecruitmentAgency.API.DTO;
+
+/// <summary>
+/// DTO работодателя
+/// </summary>
+public class EmployerDTO
 {
     /// <summary>
     /// Идентификатор работадателя

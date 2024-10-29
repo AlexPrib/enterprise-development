@@ -1,56 +1,40 @@
-﻿using RecruitmentAgency.API.DTO;
-using RecruitmentAgency.Domain;
+﻿using AutoMapper;
+using RecruitmentAgency.API.DTO;
+using RecruitmentAgency.Domain.Entity;
+using RecruitmentAgency.Domain.Repositories;
 
 namespace RecruitmentAgency.API.Services;
 
-public class ApplicantsService : IEntityService<Applicant, ApplicantCreateDTO>
+public class ApplicantsService(IEntityRepository<Applicant> repository, IMapper mapper) : IEntityService<ApplicantDTO, ApplicantCreateDTO>
 {
-    private readonly List<Applicant> _applicants = [];
+    public IEnumerable<ApplicantDTO> GetAll() => repository.GetAll().Select(mapper.Map<ApplicantDTO>);
+    public ApplicantDTO? GetById(int id) => mapper.Map<ApplicantDTO>(repository.GetById(id));
 
-    private int _id = 1;
-
-    public List<Applicant> GetAll() => _applicants;
-
-    public Applicant? GetById(int id) => _applicants.FirstOrDefault(o => o.Id == id);
-
-    public bool Add(ApplicantCreateDTO newApplicant)
-    {
-        var applicant = new Applicant
-        {
-            Id = _id++,
-            FullName = newApplicant.FullName,
-            ContactInformation = newApplicant.ContactInformation,
-            Experience = newApplicant.Experience,
-            Education = newApplicant.Education,
-            Salaries = newApplicant.Salaries
-        };
-        _applicants.Add(applicant);
-        return true;
-    }
+    public ApplicantDTO Add(ApplicantCreateDTO newApplicant) => mapper.Map<ApplicantDTO>(repository.Add(mapper.Map<Applicant>(newApplicant)));
 
     public bool Delete(int id)
     {
-        var applicant = GetById(id);
+        var applicant = repository.GetById(id);
         if (applicant == null)
         {
             return false;
         }
-        _applicants.Remove(applicant);
+        repository.Delete(applicant);
         return true;
     }
 
-    public bool Update(int id, ApplicantCreateDTO updatedApplicant)
+    public ApplicantDTO? Update(int id, ApplicantCreateDTO updatedApplicant)
     {
-        var applicant = GetById(id);
+        var applicant = repository.GetById(id);
         if (applicant == null)
         {
-            return false;
+            return null;
         }
         applicant.FullName = updatedApplicant.FullName;
         applicant.ContactInformation = updatedApplicant.ContactInformation;
         applicant.Experience = updatedApplicant.Experience;
         applicant.Education = updatedApplicant.Education;
         applicant.Salaries = updatedApplicant.Salaries;
-        return true;
+        return mapper.Map<ApplicantDTO>(repository.Update(applicant));
     }
 }
