@@ -1,0 +1,45 @@
+﻿@page "/top5-employers-by-application-count"
+@using Blazorise.DataGrid
+@inject IRecruitAgencyApiWrapper RecruitAgencyApi
+
+<Card>
+    <CardHeader>
+        <Row Class="justify-content-between">
+            <Column ColumnSize="ColumnSize.IsAuto">
+                <h4>Топ 5 работодателей по количеству заявок.</h4>
+            </Column>
+        </Row>
+    </CardHeader>
+    <CardBody>
+        <DataGrid TItem="TopEmployerDTO"
+                  Data="Employers"
+                  Responsive
+                  Striped>
+            <DataGridColumns>
+                <DataGridColumn TItem="TopEmployerDTO"
+                                Field="@nameof(TopEmployerDTO.EmployerId)"
+                                Caption="Id работодателя.">
+                </DataGridColumn>
+                <DataGridColumn TItem="TopEmployerDTO"
+                                Field="@nameof(TopEmployerDTO.EmployerName)"
+                                Caption="Название работодателя.">
+                </DataGridColumn>
+                <DataGridColumn TItem="TopEmployerDTO"
+                                Field="@nameof(TopEmployerDTO.ApplicationsCount)"
+                                Caption="Количество заявок от данного работодателя.">
+                </DataGridColumn>
+            </DataGridColumns>
+        </DataGrid>
+    </CardBody>
+</Card>
+
+
+@code {
+    private IEnumerable<TopEmployerDTO> Employers { get; set; } = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        Employers = await RecruitAgencyApi.GetTopEmployersByApplications();
+        await base.OnInitializedAsync();
+    }
+}

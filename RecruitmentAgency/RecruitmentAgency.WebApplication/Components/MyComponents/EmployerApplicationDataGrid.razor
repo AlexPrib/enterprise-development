@@ -1,0 +1,121 @@
+﻿@using Blazorise.DataGrid
+@using RecruitmentAgency.API.DTO
+@inject IRecruitAgencyApiWrapper RecruitAgencyApi
+
+<Card>
+    <CardHeader>
+        <Row Class="justify-content-between">
+            <Column ColumnSize="ColumnSize.IsAuto">
+                <h4>Заявки работодателей</h4>
+            </Column>
+            <Column ColumnSize="ColumnSize.IsAuto">
+                <Button Color="Color.Primary" Clicked="OpenCreateModal">
+                    Создать
+                </Button>
+            </Column>
+        </Row>
+    </CardHeader>
+    <CardBody>
+        <DataGrid TItem="EmployerApplicationDTO"
+                  Data="EmployerApplications"
+                  Responsive
+                  Striped>
+            <DataGridColumns>
+                <DataGridColumn Width="150px"
+                                TItem="EmployerApplicationDTO"
+                                Field="@nameof(EmployerApplicationDTO.Id)"
+                                Caption="Действия">
+                    <DisplayTemplate>
+                        <Dropdown>
+                            <DropdownToggle Color="Color.Primary">
+                                Действия
+                            </DropdownToggle>
+                            <DropdownMenu>
+                                <DropdownItem Clicked="() => OpenEditPageAsync(context)">
+                                    Редактировать
+                                </DropdownItem>
+                                <DropdownItem Clicked="() => DeleteEmployerApplicationAsync(context)">
+                                    Удалить
+                                </DropdownItem>
+                            </DropdownMenu>
+                        </Dropdown>
+                    </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridColumn TItem="EmployerApplicationDTO"
+                                Field="@nameof(EmployerApplicationDTO.Id)"
+                                Caption="Идентификатор заявки">
+                </DataGridColumn>
+                <DataGridColumn TItem="EmployerApplicationDTO"
+                                Field="@nameof(EmployerApplicationDTO.SubmissionDate)"
+                                Caption="Дата подачи">
+                </DataGridColumn>
+                <DataGridColumn TItem="EmployerApplicationDTO" Caption="Работодатель">
+                    <DisplayTemplate>
+                        @context.EmployerId
+                    </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridColumn TItem="EmployerApplicationDTO" Caption="Должность">
+                    <DisplayTemplate>
+                        @context.PositionId
+                    </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridColumn TItem="EmployerApplicationDTO"
+                                Field="@nameof(EmployerApplicationDTO.Requirements)"
+                                Caption="Требование">
+                </DataGridColumn>
+                <DataGridColumn TItem="EmployerApplicationDTO"
+                                Field="@nameof(EmployerApplicationDTO.OfferedSalary)"
+                                Caption="Предлагаемый уровень зарплаты">
+                </DataGridColumn>
+            </DataGridColumns>
+        </DataGrid>
+    </CardBody>
+</Card>
+
+<EmployerApplicationCreateModal @ref="EmployerApplicationCreateModal" OnEmployerApplicationAdded="@HandleEmployerApplicationListChanged" />
+<EmployerApplicationUpdateModal @ref="EmployerApplicationUpdateModal" EmployerApplicationToUpdate="SelectedEmployerApplication" Id="SelectedId" OnEmployerApplicationUpdated="@HandleEmployerApplicationListChanged" />
+
+
+@code {
+    private IEnumerable<EmployerApplicationDTO> EmployerApplications { get; set; } = [];
+    private int SelectedId { get; set; }
+    private EmployerApplicationCreateDTO? SelectedEmployerApplication { get; set; }
+    private EmployerApplicationCreateModal EmployerApplicationCreateModal { get; set; } = new();
+    private EmployerApplicationUpdateModal EmployerApplicationUpdateModal { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await RefreshEmployerApplicationsCollection();
+        await base.OnInitializedAsync();
+    }
+
+    private async Task OpenEditPageAsync(EmployerApplicationDTO context)
+    {
+        SelectedId = context.Id;
+        SelectedEmployerApplication = new()
+            {
+                SubmissionDate = context.SubmissionDate,
+                EmployerId = context.EmployerId,
+                PositionId = context.PositionId,
+                Requirements = context.Requirements,
+                OfferedSalary = context.OfferedSalary
+            };
+        await EmployerApplicationUpdateModal.Show();
+    }
+
+    private async Task DeleteEmployerApplicationAsync(EmployerApplicationDTO context)
+    {
+        await RecruitAgencyApi.DeleteEmployerApplication(context.Id);
+        await RefreshEmployerApplicationsCollection();
+    }
+
+    private async Task HandleEmployerApplicationListChanged()
+    {
+        await RefreshEmployerApplicationsCollection();
+    }
+
+    private async Task OpenCreateModal() => await EmployerApplicationCreateModal.Show();
+
+
+    private async Task RefreshEmployerApplicationsCollection() => EmployerApplications = await RecruitAgencyApi.GetAllEmployerApplications();
+}

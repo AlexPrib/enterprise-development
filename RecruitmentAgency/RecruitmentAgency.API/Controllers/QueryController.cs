@@ -79,7 +79,7 @@ namespace RecruitmentAgency.API.Controllers
         /// <response code="400">Список работодателей отсутствует.</response>
         /// <response code="200">Список работодателей успешно возвращён.</response>
         [HttpGet("employers/max-salary")]
-        public ActionResult<List<Employer>> GetEmployersWithMaxSalaryApplications()
+        public ActionResult<List<EmployerDTO>> GetEmployersWithMaxSalaryApplications()
         {
             return Ok(service.GetEmployersWithMaxSalaryApplications());
         }

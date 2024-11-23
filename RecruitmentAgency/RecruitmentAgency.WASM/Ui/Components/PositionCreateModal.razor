@@ -1,0 +1,52 @@
+﻿@inject IRecruitAgencyApiWrapper RecruitAgencyApi
+
+<Modal @ref="PositionModal">
+    <ModalContent Centered>
+        <Form>
+            <ModalHeader>
+                <ModalTitle>Новая должность</ModalTitle>
+                <CloseButton Clicked="ClosePositionModalAsync" />
+            </ModalHeader>
+
+            <ModalBody>
+                <Field>
+                    <FieldLabel>Раздел</FieldLabel>
+                    <TextEdit @bind-Text="NewPosition.Section" />
+                </Field>
+                <Field>
+                    <FieldLabel>Должность</FieldLabel>
+                    <TextEdit @bind-Text="@NewPosition.PositionName" />
+                </Field>
+            </ModalBody>
+            <ModalFooter>
+                <Button Color="Color.Secondary" Clicked="ClosePositionModalAsync">Отмена</Button>
+                <Button Color="Color.Primary" Clicked="CreatePositionAsync">Создать</Button>
+            </ModalFooter>
+        </Form>
+    </ModalContent>
+</Modal>
+
+@code {
+    [Parameter]
+    public EventCallback OnPositionAdded { get; set; }
+
+    private Modal PositionModal { get; set; } = new();
+    private PositionCreateDTO NewPosition { get; set; } = new();
+
+    public async Task Show() => await PositionModal.Show();
+
+    private async Task ClosePositionModalAsync()
+    {
+        NewPosition = new();
+        await PositionModal.Hide();
+    }
+
+    private async Task CreatePositionAsync()
+    {
+        await RecruitAgencyApi.CreatePosition(NewPosition);
+        NewPosition = new();
+        await PositionModal.Hide();
+        await OnPositionAdded.InvokeAsync();
+    }
+}
+

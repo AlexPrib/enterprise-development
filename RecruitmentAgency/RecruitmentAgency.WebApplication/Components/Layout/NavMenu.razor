@@ -1,0 +1,78 @@
+﻿﻿<div class="top-row ps-3 navbar navbar-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="">Кадровое агентство</a>
+        <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </div>
+</div>
+<div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
+    <nav class="flex-column">
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="applicants">
+                <span aria-hidden="true"></span> Соискатели
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="applicantapplications">
+                <span aria-hidden="true"></span> Заявки соискателей
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="employers">
+                <span aria-hidden="true"></span> Работодатели
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="employerapplications">
+                <span aria-hidden="true"></span> Заявки работодателей
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="positions">
+                <span aria-hidden="true"></span> Должности
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="sorted-info-all-applicants-pos">
+                <span aria-hidden="true"></span> Сведения о соискателях по должности
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="applicants-by-submission-daterange">
+                <span aria-hidden="true"></span> Соискатели, оставившие заявки за заданный период
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="applicants-for-employerapp">
+                <span aria-hidden="true"></span> Cведения о соискателях, соответствующих определенной заявке работодателя.
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="application-count-by-section-pos">
+                <span aria-hidden="true"></span> Информация о количестве заявок по каждому разделу и должности.
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="top5-employers-by-application-count">
+                <span aria-hidden="true"></span> Топ 5 работодателей по кол. заявок.
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="employers-with-max-salary">
+                <span aria-hidden="true"></span> Работодатели, дающие макс. зарплату.
+            </NavLink>
+        </div>
+    </nav>
+</div>
+
+@code {
+    private bool collapseNavMenu = true;
+
+    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+}

@@ -1,0 +1,118 @@
+﻿@inject IRecruitAgencyApiWrapper RecruitAgencyApi
+@using System.Globalization;
+
+<Modal @ref="ApplicantApplicationModal">
+    <Alert Color="Color.Danger" @bind-Visible="@IsAlertVisible">
+        <AlertMessage>Список соискателей или должностей пуст!</AlertMessage>
+    </Alert>
+    <ModalContent Centered>
+        <Form>
+            <ModalHeader>
+                <ModalTitle>Новая заявка</ModalTitle>
+                <CloseButton Clicked="CloseApplicantApplicationModalAsync" />
+            </ModalHeader>
+
+            <ModalBody>
+                <Field>
+                    <FieldLabel>Дата подачи заявки</FieldLabel>
+                    <InputDate @bind-Value="NewApplicantApplication.SubmissionDate" />
+                </Field>
+                <Field>
+                    <FieldLabel>Выберите соискателя</FieldLabel>
+                    <Select TValue="int" @bind-SelectedValue="NewApplicantApplication.ApplicantId">
+                        @if (Applicants != null)
+                        {
+                            @foreach (var applicant in Applicants)
+                            {
+                                <SelectItem Value="@applicant.Id">@($"{applicant.Id} | {applicant.FullName} | {applicant.ContactInformation} | {applicant.Experience} | {applicant.Education} | {applicant.Salaries}")</SelectItem>
+                            }
+                        }
+                    </Select>
+                </Field>
+                <Field>
+                    <FieldLabel>Выберите должность</FieldLabel>
+                    <Select TValue="int" @bind-SelectedValue="NewApplicantApplication.PositionId">
+                        @if (Positions != null)
+                        {
+                            @foreach (var position in Positions)
+                            {
+                                <SelectItem Value="@position.Id">@($"{position.Id} | {position.Section} | {position.PositionName}")</SelectItem>
+                            }
+                        }
+                    </Select>
+                </Field>
+            </ModalBody>
+
+            <ModalFooter>
+                <Button Color="Color.Secondary" Clicked="CloseApplicantApplicationModalAsync">Отмена</Button>
+                <Button Color="Color.Primary" Clicked="CreateApplicantApplicationAsync">Создать</Button>
+            </ModalFooter>
+        </Form>
+    </ModalContent>
+</Modal>
+
+@code {
+    [Parameter]
+    public EventCallback OnApplicantApplicationAdded { get; set; }
+
+    private Modal ApplicantApplicationModal { get; set; } = new();
+    private ApplicantApplicationCreateDTO NewApplicantApplication { get; set; } = new() { ApplicantId = 0, SubmissionDate = DateTime.ParseExact("01.01.1990", "dd.MM.yyyy", CultureInfo.InvariantCulture), PositionId = 0};
+    private IEnumerable<ApplicantDTO>? Applicants { get; set; }
+    private IEnumerable<PositionDTO>? Positions { get; set; }
+    private bool IsAlertVisible { get; set; } = false;
+
+    public async Task Show()
+    {
+        await LoadApplicantsAsync();
+        await LoadPositionsAsync();
+        NewApplicantApplication.SubmissionDate = DateTime.Now;
+        await ApplicantApplicationModal.Show();
+    }
+
+    private async Task CloseApplicantApplicationModalAsync()
+    {
+        IsAlertVisible = false;
+        NewApplicantApplication = new();
+        await ApplicantApplicationModal.Hide();
+    }
+
+    private async Task CreateApplicantApplicationAsync()
+    {
+        try
+        {
+            await RecruitAgencyApi.CreateApplicantApplication(NewApplicantApplication);
+            await CloseApplicantApplicationModalAsync();
+            await OnApplicantApplicationAdded.InvokeAsync();
+        }
+        catch
+        {
+            IsAlertVisible = true;
+        }
+    }
+
+    private async Task LoadApplicantsAsync()
+    {
+        Applicants = await RecruitAgencyApi.GetAllApplicants();
+        if (Applicants.FirstOrDefault() is null)
+        {
+            NewApplicantApplication.ApplicantId = 0;
+        }
+        else
+        {
+            NewApplicantApplication.ApplicantId = Applicants.FirstOrDefault()!.Id;
+        }
+    }
+
+    private async Task LoadPositionsAsync()
+    {
+        Positions = await RecruitAgencyApi.GetAllPositions();
+        if (Positions.FirstOrDefault() is null)
+        {
+            NewApplicantApplication.PositionId = 0;
+        }
+        else
+        {
+            NewApplicantApplication.PositionId = Positions.FirstOrDefault()!.Id;
+        }
+    }
+}

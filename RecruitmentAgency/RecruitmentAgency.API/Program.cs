@@ -35,8 +35,7 @@ builder.Services.AddScoped<IEntityService<ApplicantApplicantDTO, ApplicantApplic
 builder.Services.AddScoped<IEntityService<EmployerApplicationDTO, EmployerApplicationCreateDTO>, EmployerApplicationService>();
 
 builder.Services.AddScoped<IQueryService, QueryService>();
-
-
+builder.Services.AddCors(options => options.AddDefaultPolicy(policy => { policy.AllowAnyOrigin(); policy.AllowAnyMethod(); policy.AllowAnyHeader(); }));
 builder.Services.AddControllers();
 
 var app = builder.Build();
@@ -47,5 +46,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseCors();
 app.MapControllers();
 app.Run();

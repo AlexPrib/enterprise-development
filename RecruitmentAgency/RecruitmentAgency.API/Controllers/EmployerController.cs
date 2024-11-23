@@ -56,7 +56,7 @@ namespace RecruitmentAgency.API.Controllers
             {
                 return NotFound("Failed to create the employer.");
             }
-            return CreatedAtAction(nameof(Get), new { id = result.Id }, result);
+            return Ok(result);
         }
 
 
@@ -76,7 +76,7 @@ namespace RecruitmentAgency.API.Controllers
             {
                 return NotFound("Работодатель с указанным идентификатором не найден.");
             }
-            return Ok();
+            return Ok(result);
         }
 
         /// <summary>

@@ -56,7 +56,7 @@ namespace RecruitmentAgency.API.Controllers
             {
                 return NotFound("Failed to create the position.");
             }
-            return CreatedAtAction(nameof(Get), new { id = result.Id }, result);
+            return Ok(result);
         }
 
         /// <summary>
@@ -75,7 +75,7 @@ namespace RecruitmentAgency.API.Controllers
             {
                 return NotFound("Позиция с указанным идентификатором не найдена.");
             }
-            return Ok();
+            return Ok(result);
         }
 
         /// <summary>

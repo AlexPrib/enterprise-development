@@ -1,0 +1,1762 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "RecruitmentAgency.API",
+    "version": "1.0"
+  },
+  "paths": {
+    "/api/ApplicantApplications": {
+      "get": {
+        "tags": [
+          "ApplicantApplications"
+        ],
+        "summary": "Получает все заявки соискателей.",
+        "responses": {
+          "200": {
+            "description": "Заявки успешно получены.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ApplicantApplicantDTO"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ApplicantApplicantDTO"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ApplicantApplicantDTO"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "ApplicantApplications"
+        ],
+        "summary": "Создает новую заявку соискателя.",
+        "requestBody": {
+          "description": "Данные для создания новой заявки.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApplicantApplicationCreateDTO"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApplicantApplicationCreateDTO"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApplicantApplicationCreateDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Заявка успешно создана.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplicantApplicantDTO"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplicantApplicantDTO"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplicantApplicantDTO"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Данные заявки недействительны."
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "ApplicantApplications"
+        ],
+        "summary": "Обновляет информацию о существующей заявке.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "description": "Идентификатор заявки соискателя.",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Обновлённая информация о заявке.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApplicantApplicationCreateDTO"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApplicantApplicationCreateDTO"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApplicantApplicationCreateDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Заявка успешно обновлена.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplicantApplicantDTO"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplicantApplicantDTO"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplicantApplicantDTO"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Заявка с указанным идентификатором не найдена."
+          }
+        }
+      }
+    },
+    "/api/ApplicantApplications/{id}": {
+      "get": {
+        "tags": [
+          "ApplicantApplications"
+        ],
+        "summary": "Получает заявку соискателя по указанному идентификатору.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Идентификатор заявки.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Заявка успешно найдена.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplicantApplicantDTO"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplicantApplicantDTO"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplicantApplicantDTO"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Заявка с указанным идентификатором не найдена."
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "ApplicantApplications"
+        ],
+        "summary": "Удаляет заявку соискателя по указанному идентификатору.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Идентификатор заявки, которую необходимо удалить.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "204": {
+            "description": "Заявка успешно удалена."
+          },
+          "404": {
+            "description": "Заявка с указанным идентификатором не найдена."
+          }
+        }
+      }
+    },
+    "/api/Applicants": {
+      "get": {
+        "tags": [
+          "Applicants"
+        ],
+        "summary": "Получает список всех соискателей.",
+        "responses": {
+          "200": {
+            "description": "Соискатели успешно получены.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ApplicantDTO"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ApplicantDTO"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ApplicantDTO"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Applicants"
+        ],
+        "summary": "Добавляет нового соискателя.",
+        "requestBody": {
+          "description": "Данные для создания нового соискателя.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApplicantCreateDTO"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApplicantCreateDTO"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApplicantCreateDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplicantDTO"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplicantDTO"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplicantDTO"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Соискатель успешно создан."
+          },
+          "404": {
+            "description": "Данные соискателя недействительны."
+          }
+        }
+      }
+    },
+    "/api/Applicants/{id}": {
+      "get": {
+        "tags": [
+          "Applicants"
+        ],
+        "summary": "Получает информацию о соискателе по идентификатору.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Идентификатор соискателя.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Соискатель успешно найден.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplicantDTO"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplicantDTO"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplicantDTO"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Соискатель с указанным идентификатором не найден."
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Applicants"
+        ],
+        "summary": "Обновляет информацию о существующем соискателе.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Идентификатор соискателя, которого нужно обновить.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Обновлённая информация о соискателе.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApplicantCreateDTO"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApplicantCreateDTO"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApplicantCreateDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Соискатель успешно обновлён.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplicantDTO"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplicantDTO"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplicantDTO"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Соискатель с указанным идентификатором не найден."
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Applicants"
+        ],
+        "summary": "Удаляет соискателя по указанному идентификатору.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Идентификатор соискателя, которого нужно удалить.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "204": {
+            "description": "Соискатель успешно удалён."
+          },
+          "404": {
+            "description": "Соискатель с указанным идентификатором не найден."
+          }
+        }
+      }
+    },
+    "/api/Employer": {
+      "get": {
+        "tags": [
+          "Employer"
+        ],
+        "summary": "Возвращает список всех работодателей.",
+        "responses": {
+          "200": {
+            "description": "Список успешно возвращён.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EmployerDTO"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EmployerDTO"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EmployerDTO"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Employer"
+        ],
+        "summary": "Добавляет нового работодателя.",
+        "requestBody": {
+          "description": "Информация о новом работодателе.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmployerCreateDTO"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmployerCreateDTO"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmployerCreateDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Работодатель успешно добавлен.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmployerDTO"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmployerDTO"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmployerDTO"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Работодатель не был добавлен."
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Employer"
+        ],
+        "summary": "Обновляет информацию о существующем работодателе.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "description": "Идентификатор работодателя",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Обновлённая информация о работодателе.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmployerCreateDTO"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmployerCreateDTO"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmployerCreateDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Работодатель успешно обновлён.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmployerDTO"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmployerDTO"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmployerDTO"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Работодатель с указанным идентификатором не найден."
+          }
+        }
+      }
+    },
+    "/api/Employer/{id}": {
+      "get": {
+        "tags": [
+          "Employer"
+        ],
+        "summary": "Получает информацию о работодателе по идентификатору.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Идентификатор работодателя.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Работодатель найден и возвращён успешно.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmployerDTO"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmployerDTO"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmployerDTO"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Работодатель с указанным идентификатором не найден."
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Employer"
+        ],
+        "summary": "Удаляет работодателя по идентификатору.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Идентификатор работодателя.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Работодатель успешно удалён."
+          },
+          "404": {
+            "description": "Работодатель с указанным идентификатором не найден."
+          }
+        }
+      }
+    },
+    "/api/EmployerApplication": {
+      "get": {
+        "tags": [
+          "EmployerApplication"
+        ],
+        "summary": "Возвращает список всех заявок работодателей.",
+        "responses": {
+          "200": {
+            "description": "Список успешно возвращён.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EmployerApplicationDTO"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EmployerApplicationDTO"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EmployerApplicationDTO"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "EmployerApplication"
+        ],
+        "summary": "Добавляет новую заявку работодателя.",
+        "requestBody": {
+          "description": "Информация о новой заявке.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmployerApplicationCreateDTO"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmployerApplicationCreateDTO"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmployerApplicationCreateDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Заявка успешно добавлена.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmployerApplicationDTO"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmployerApplicationDTO"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmployerApplicationDTO"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Заявка не была добавлена."
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "EmployerApplication"
+        ],
+        "summary": "Обновляет информацию о существующей заявке работодателя.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "description": "Идентификатор заявки работодателя",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Обновлённая информация о заявке.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmployerApplicationCreateDTO"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmployerApplicationCreateDTO"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmployerApplicationCreateDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Заявка успешно обновлена.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmployerApplicationDTO"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmployerApplicationDTO"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmployerApplicationDTO"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Заявка с указанным идентификатором не найдена."
+          }
+        }
+      }
+    },
+    "/api/EmployerApplication/{id}": {
+      "get": {
+        "tags": [
+          "EmployerApplication"
+        ],
+        "summary": "Получает информацию о заявке работодателя по идентификатору.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Идентификатор заявки.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Заявка найдена и возвращена успешно.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmployerApplicationDTO"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmployerApplicationDTO"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmployerApplicationDTO"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Заявка с указанным идентификатором не найдена."
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "EmployerApplication"
+        ],
+        "summary": "Удаляет заявку работодателя по идентификатору.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Идентификатор заявки.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "204": {
+            "description": "Заявка успешно удалена."
+          },
+          "404": {
+            "description": "Заявка с указанным идентификатором не найдена."
+          }
+        }
+      }
+    },
+    "/api/Position": {
+      "get": {
+        "tags": [
+          "Position"
+        ],
+        "summary": "Возвращает список всех позиций.",
+        "responses": {
+          "200": {
+            "description": "Список успешно возвращён.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PositionDTO"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PositionDTO"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PositionDTO"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Position"
+        ],
+        "summary": "Добавляет новую позицию.",
+        "requestBody": {
+          "description": "Информация о новой позиции.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PositionCreateDTO"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PositionCreateDTO"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/PositionCreateDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Позиция успешно добавлена.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/PositionDTO"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PositionDTO"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PositionDTO"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Позиция не была добавлена."
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Position"
+        ],
+        "summary": "Обновляет информацию о существующей позиции.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "description": "Идентификатор должности",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Обновлённая информация о позиции.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PositionCreateDTO"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PositionCreateDTO"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/PositionCreateDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Позиция успешно обновлена.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/PositionDTO"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PositionDTO"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PositionDTO"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Позиция с указанным идентификатором не найдена."
+          }
+        }
+      }
+    },
+    "/api/Position/{id}": {
+      "get": {
+        "tags": [
+          "Position"
+        ],
+        "summary": "Получает информацию о позиции по идентификатору.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Идентификатор позиции.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Позиция найдена и возвращена успешно.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/PositionDTO"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PositionDTO"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PositionDTO"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Позиция с указанным идентификатором не найдена."
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Position"
+        ],
+        "summary": "Удаляет позицию по идентификатору.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Идентификатор позиции.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Позиция успешно удалена."
+          },
+          "404": {
+            "description": "Позиция с указанным идентификатором не найдена."
+          }
+        }
+      }
+    },
+    "/api/Query/applicants/position/{positionName}": {
+      "get": {
+        "tags": [
+          "Query"
+        ],
+        "summary": "Получает всех соискателей для указанной позиции, отсортированных по полному имени.",
+        "parameters": [
+          {
+            "name": "positionName",
+            "in": "path",
+            "description": "Название позиции.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Список соискателей успешно возвращён.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ApplicantDTO"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ApplicantDTO"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ApplicantDTO"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Query/applicants/date-range": {
+      "get": {
+        "tags": [
+          "Query"
+        ],
+        "summary": "Получает всех соискателей в диапазоне дат подачи заявок.",
+        "parameters": [
+          {
+            "name": "startDate",
+            "in": "query",
+            "description": "Дата начала диапазона.",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "endDate",
+            "in": "query",
+            "description": "Дата конца диапазона.",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Список соискателей успешно возвращён.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ApplicantDTO"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ApplicantDTO"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ApplicantDTO"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Query/applicants/employer-application/{employerApplicationId}": {
+      "get": {
+        "tags": [
+          "Query"
+        ],
+        "summary": "Получает соискателей для заявки работодателя по идентификатору заявки.",
+        "parameters": [
+          {
+            "name": "employerApplicationId",
+            "in": "path",
+            "description": "Идентификатор заявки работодателя.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Список соискателей успешно возвращён.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ApplicantsForEmployerApplicationDTO"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ApplicantsForEmployerApplicationDTO"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ApplicantsForEmployerApplicationDTO"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Query/applications/statistics": {
+      "get": {
+        "tags": [
+          "Query"
+        ],
+        "summary": "Получает статистику заявок по секциям и позициям.",
+        "responses": {
+          "200": {
+            "description": "Статистика успешно возвращена.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ApplicationStatisticsDTO"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ApplicationStatisticsDTO"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ApplicationStatisticsDTO"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Query/top-employers": {
+      "get": {
+        "tags": [
+          "Query"
+        ],
+        "summary": "Получает топ работодателей по количеству заявок.",
+        "responses": {
+          "200": {
+            "description": "Список работодателей успешно возвращён.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TopEmployerDTO"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TopEmployerDTO"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TopEmployerDTO"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Query/employers/max-salary": {
+      "get": {
+        "tags": [
+          "Query"
+        ],
+        "summary": "Получает работодателей с максимальными зарплатами по заявкам.",
+        "responses": {
+          "200": {
+            "description": "Список работодателей успешно возвращён.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EmployerDTO"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EmployerDTO"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EmployerDTO"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Список работодателей отсутствует."
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ApplicantApplicantDTO": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Идентификатор заявки соискателя",
+            "format": "int32"
+          },
+          "submissionDate": {
+            "type": "string",
+            "description": "Дата подачи",
+            "format": "date-time"
+          },
+          "applicantId": {
+            "type": "integer",
+            "description": "Соискатель",
+            "format": "int32"
+          },
+          "positionId": {
+            "type": "integer",
+            "description": "Должность",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false,
+        "description": "DTO заявки соискателя"
+      },
+      "ApplicantApplicationCreateDTO": {
+        "type": "object",
+        "properties": {
+          "submissionDate": {
+            "type": "string",
+            "description": "Дата подачи",
+            "format": "date-time"
+          },
+          "applicantId": {
+            "type": "integer",
+            "description": "Соискатель",
+            "format": "int32"
+          },
+          "positionId": {
+            "type": "integer",
+            "description": "Должность",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false,
+        "description": "DTO для создания заявки соискателя"
+      },
+      "ApplicantCreateDTO": {
+        "type": "object",
+        "properties": {
+          "fullName": {
+            "type": "string",
+            "description": "ФИО соискателя",
+            "nullable": true
+          },
+          "contactInformation": {
+            "type": "string",
+            "description": "Телефон",
+            "nullable": true
+          },
+          "experience": {
+            "type": "number",
+            "description": "Опыт работы",
+            "format": "double"
+          },
+          "education": {
+            "type": "string",
+            "description": "Образование",
+            "nullable": true
+          },
+          "salaries": {
+            "type": "integer",
+            "description": "Ожидаемый уровень зарплаты",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false,
+        "description": "DTO для создания организации"
+      },
+      "ApplicantDTO": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Идентификатор соискателя",
+            "format": "int32"
+          },
+          "fullName": {
+            "type": "string",
+            "description": "ФИО соискателя",
+            "nullable": true
+          },
+          "contactInformation": {
+            "type": "string",
+            "description": "Телефон",
+            "nullable": true
+          },
+          "experience": {
+            "type": "number",
+            "description": "Опыт работы",
+            "format": "double"
+          },
+          "education": {
+            "type": "string",
+            "description": "Образование",
+            "nullable": true
+          },
+          "salaries": {
+            "type": "integer",
+            "description": "Ожидаемый уровень зарплаты",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false,
+        "description": "DTO Соискателя"
+      },
+      "ApplicantsForEmployerApplicationDTO": {
+        "type": "object",
+        "properties": {
+          "applicantId": {
+            "type": "integer",
+            "description": "Соискатель",
+            "format": "int32"
+          },
+          "employerAppId": {
+            "type": "integer",
+            "description": "Заявка работодателя",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false,
+        "description": "DTO описывающее соискателя и заявку работодателя"
+      },
+      "ApplicationStatisticsDTO": {
+        "type": "object",
+        "properties": {
+          "section": {
+            "type": "string",
+            "description": "Раздел, к которому относится должность.",
+            "nullable": true
+          },
+          "positionName": {
+            "type": "string",
+            "description": "Название должности.",
+            "nullable": true
+          },
+          "employerApplicationsCount": {
+            "type": "integer",
+            "description": "Количество заявок от работодателей по данной должности.",
+            "format": "int32"
+          },
+          "applicantApplicationsCount": {
+            "type": "integer",
+            "description": "Количество заявок от соискателей по данной должности.",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false,
+        "description": "DTO для счета заявок"
+      },
+      "EmployerApplicationCreateDTO": {
+        "type": "object",
+        "properties": {
+          "submissionDate": {
+            "type": "string",
+            "description": "Дата подачи",
+            "format": "date-time"
+          },
+          "employerId": {
+            "type": "integer",
+            "description": "Работодатель",
+            "format": "int32"
+          },
+          "positionId": {
+            "type": "integer",
+            "description": "Должность",
+            "format": "int32"
+          },
+          "requirements": {
+            "type": "string",
+            "description": "Требование",
+            "nullable": true
+          },
+          "offeredSalary": {
+            "type": "integer",
+            "description": "Предлагаемый уровень зарплаты",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false,
+        "description": "DTO для создания заявки работодателя"
+      },
+      "EmployerApplicationDTO": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Идентификатор заявки работодателя",
+            "format": "int32"
+          },
+          "submissionDate": {
+            "type": "string",
+            "description": "Дата подачи",
+            "format": "date-time"
+          },
+          "employerId": {
+            "type": "integer",
+            "description": "Работодатель",
+            "format": "int32"
+          },
+          "positionId": {
+            "type": "integer",
+            "description": "Должность",
+            "format": "int32"
+          },
+          "requirements": {
+            "type": "string",
+            "description": "Требование",
+            "nullable": true
+          },
+          "offeredSalary": {
+            "type": "integer",
+            "description": "Предлагаемый уровень зарплаты",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false,
+        "description": "DTO заявки работодателя"
+      },
+      "EmployerCreateDTO": {
+        "type": "object",
+        "properties": {
+          "companyName": {
+            "type": "string",
+            "description": "Название компании",
+            "nullable": true
+          },
+          "contactPersonName": {
+            "type": "string",
+            "description": "ФИО контактного лица",
+            "nullable": true
+          },
+          "companyNumber": {
+            "type": "string",
+            "description": "Телефон работодателя",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "DTO для создания работодателя"
+      },
+      "EmployerDTO": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Идентификатор работадателя",
+            "format": "int32"
+          },
+          "companyName": {
+            "type": "string",
+            "description": "Название компании",
+            "nullable": true
+          },
+          "contactPersonName": {
+            "type": "string",
+            "description": "ФИО контактного лица",
+            "nullable": true
+          },
+          "companyNumber": {
+            "type": "string",
+            "description": "Телефон работодателя",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "DTO работодателя"
+      },
+      "PositionCreateDTO": {
+        "type": "object",
+        "properties": {
+          "section": {
+            "type": "string",
+            "description": "Раздел",
+            "nullable": true
+          },
+          "positionName": {
+            "type": "string",
+            "description": "Должность",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "DTO для создания должности"
+      },
+      "PositionDTO": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Идентификатор должности",
+            "format": "int32"
+          },
+          "section": {
+            "type": "string",
+            "description": "Раздел",
+            "nullable": true
+          },
+          "positionName": {
+            "type": "string",
+            "description": "Должность",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "DTO должности"
+      },
+      "TopEmployerDTO": {
+        "type": "object",
+        "properties": {
+          "employerId": {
+            "type": "integer",
+            "description": "Идентификатор работодателя.",
+            "format": "int32"
+          },
+          "employerName": {
+            "type": "string",
+            "description": "Название работодателя.",
+            "nullable": true
+          },
+          "applicationsCount": {
+            "type": "integer",
+            "description": "Количество заявок от данного работодателя.",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false,
+        "description": "DTO для топ работодателей"
+      }
+    }
+  }
+}

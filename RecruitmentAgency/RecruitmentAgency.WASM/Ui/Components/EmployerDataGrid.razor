@@ -1,0 +1,108 @@
+﻿@using Blazorise.DataGrid
+@inject IRecruitAgencyApiWrapper RecruitAgencyApi
+
+<Card>
+    <CardHeader>
+        <Row Class="justify-content-between">
+            <Column ColumnSize="ColumnSize.IsAuto">
+                <h4>Работодатели</h4>
+            </Column>
+            <Column ColumnSize="ColumnSize.IsAuto">
+                <Button Color="Color.Primary" Clicked="OpenCreateModal">
+                    Создать
+                </Button>
+            </Column>
+        </Row>
+    </CardHeader>
+    <CardBody>
+        <DataGrid TItem="EmployerDTO"
+                  Data="Employers"
+                  Responsive
+                  Striped>
+            <DataGridColumns>
+                <DataGridColumn Width="150px"
+                                TItem="EmployerDTO"
+                                Field="@nameof(EmployerDTO.Id)"
+                                Caption="Действия">
+                    <DisplayTemplate>
+                        <Dropdown>
+                            <DropdownToggle Color="Color.Primary">
+                                Действия
+                            </DropdownToggle>
+                            <DropdownMenu>
+                                <DropdownItem Clicked="() => OpenEditPageAsync(context)">
+                                    Редактировать
+                                </DropdownItem>
+                                <DropdownItem Clicked="() => DeleteEmployerAsync(context)">
+                                    Удалить
+                                </DropdownItem>
+                            </DropdownMenu>
+                        </Dropdown>
+                    </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridColumn TItem="EmployerDTO"
+                                Field="@nameof(EmployerDTO.Id)"
+                                Caption="Идентификатор соискателя">
+                </DataGridColumn>
+                <DataGridColumn TItem="EmployerDTO"
+                                Field="@nameof(EmployerDTO.CompanyName)"
+                                Caption="Название компании">
+                </DataGridColumn>
+                <DataGridColumn TItem="EmployerDTO"
+                                Field="@nameof(EmployerDTO.ContactPersonName)"
+                                Caption="ФИО контактного лица">
+                </DataGridColumn>
+                <DataGridColumn TItem="EmployerDTO"
+                                Field="@nameof(EmployerDTO.CompanyNumber)"
+                                Caption="Телефон работодателя">
+                </DataGridColumn>
+            </DataGridColumns>
+        </DataGrid>
+    </CardBody>
+</Card>
+
+<EmployerCreateModal @ref="EmployerCreateModal" OnEmployerAdded="@HandleEmployerListChanged" />
+<EmployerUpdateModal @ref="EmployerUpdateModal" EmployerToUpdate="SelectedEmployer" Id="SelectedId" OnEmployerUpdated="@HandleEmployerListChanged" />
+
+
+@code {
+    private IEnumerable<EmployerDTO> Employers { get; set; } = [];
+    private int SelectedId { get; set; }
+    private EmployerCreateDTO? SelectedEmployer { get; set; }
+    private EmployerCreateModal EmployerCreateModal { get; set; } = new();
+    private EmployerUpdateModal EmployerUpdateModal { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await RefreshEmployerCollection();
+        await base.OnInitializedAsync();
+    }
+
+    private async Task OpenEditPageAsync(EmployerDTO context)
+    {
+        SelectedId = context.Id;
+        SelectedEmployer = new()
+            {
+                CompanyName = context.CompanyName,
+                ContactPersonName = context.ContactPersonName,
+                CompanyNumber = context.CompanyNumber,
+            };
+        await EmployerUpdateModal.Show();
+    }
+
+    private async Task DeleteEmployerAsync(EmployerDTO context)
+    {
+        await RecruitAgencyApi.DeleteEmployer(context.Id);
+        await RefreshEmployerCollection();
+    }
+
+    private async Task HandleEmployerListChanged()
+    {
+        await RefreshEmployerCollection();
+    }
+
+    private async Task OpenCreateModal() => await EmployerCreateModal.Show();
+
+    private async Task RefreshEmployerCollection() => Employers = await RecruitAgencyApi.GetAllEmployers();
+}
+

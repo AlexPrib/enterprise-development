@@ -18,7 +18,7 @@ namespace RecruitmentAgency.API.Controllers
         /// <returns>Список всех заявок работодателей.</returns>
         /// <response code="200">Список успешно возвращён.</response>
         [HttpGet]
-        public ActionResult<IEnumerable<EmployerApplication>> Get()
+        public ActionResult<IEnumerable<EmployerApplicationDTO>> Get()
         {
             return Ok(service.GetAll());
         }
@@ -31,7 +31,7 @@ namespace RecruitmentAgency.API.Controllers
         /// <response code="200">Заявка найдена и возвращена успешно.</response>
         /// <response code="404">Заявка с указанным идентификатором не найдена.</response>
         [HttpGet("{id}")]
-        public ActionResult<EmployerApplication> Get(int id)
+        public ActionResult<EmployerApplicationDTO> Get(int id)
         {
             var employerApplication = service.GetById(id);
             if (employerApplication == null)
@@ -49,7 +49,7 @@ namespace RecruitmentAgency.API.Controllers
         /// <response code="200">Заявка успешно добавлена.</response>
         /// <response code="400">Заявка не была добавлена.</response>
         [HttpPost]
-        public ActionResult Post(EmployerApplicationCreateDTO newEmployerApplication)
+        public ActionResult<EmployerApplicationDTO> Post(EmployerApplicationCreateDTO newEmployerApplication)
         {
             var result = service.Add(newEmployerApplication);
             if (result == null)
@@ -57,7 +57,7 @@ namespace RecruitmentAgency.API.Controllers
                 return BadRequest("Ошибка при добавлении заявки. Проверьте корректность данных.");
             }
 
-            return Ok();
+            return Ok(result);
         }
 
         /// <summary>
@@ -69,14 +69,14 @@ namespace RecruitmentAgency.API.Controllers
         /// <response code="200">Заявка успешно обновлена.</response>
         /// <response code="404">Заявка с указанным идентификатором не найдена.</response>
         [HttpPut]
-        public ActionResult Put(int id, EmployerApplicationCreateDTO updatedEmployerApplication)
+        public ActionResult<EmployerApplicationDTO> Put(int id, EmployerApplicationCreateDTO updatedEmployerApplication)
         {
             var result = service.Update(id, updatedEmployerApplication);
             if (result == null)
             {
                 return NotFound("Заявка с указанным идентификатором не найдена.");
             }
-            return Ok();
+            return Ok(result);
         }
 
         /// <summary>

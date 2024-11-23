@@ -1,0 +1,65 @@
+﻿@page "/applicants-by-submission-daterange"
+@using Blazorise.DataGrid
+@inject IRecruitAgencyApiWrapper RecruitAgencyApi
+
+
+<Card>
+    <CardHeader>
+        <Row Class="justify-content-between">
+            <Column ColumnSize="ColumnSize.IsAuto">
+                <h4>Получает всех соискателей в диапазоне дат подачи заявок.</h4>
+            </Column>
+        </Row>
+    </CardHeader>
+    <CardBody>
+        <DataGrid TItem="ApplicantDTO"
+                  Data="Applicants"
+                  Responsive
+                  Striped>
+            <DataGridColumns>
+                <DataGridColumn TItem="ApplicantDTO"
+                                Field="@nameof(ApplicantDTO.Id)"
+                                Caption="Идентификатор соискателя">
+                </DataGridColumn>
+                <DataGridColumn TItem="ApplicantDTO"
+                                Field="@nameof(ApplicantDTO.FullName)"
+                                Caption="ФИО">
+                </DataGridColumn>
+                <DataGridColumn TItem="ApplicantDTO"
+                                Field="@nameof(ApplicantDTO.ContactInformation)"
+                                Caption="Телефон">
+                </DataGridColumn>
+                <DataGridColumn TItem="ApplicantDTO"
+                                Field="@nameof(ApplicantDTO.Experience)"
+                                Caption="Опыт работы">
+                </DataGridColumn>
+                <DataGridColumn TItem="ApplicantDTO"
+                                Field="@nameof(ApplicantDTO.Education)"
+                                Caption="Образование">
+                </DataGridColumn>
+                <DataGridColumn TItem="ApplicantDTO"
+                                Field="@nameof(ApplicantDTO.Salaries)"
+                                Caption="Ожидаемый уровень зарплаты">
+                </DataGridColumn>
+            </DataGridColumns>
+        </DataGrid>
+    </CardBody>
+</Card>
+<Div>
+    <Label>Дата начала диапазона:</Label>
+    <InputDate @bind-Value="StartDate" />
+
+    <Label>Дата конца диапазона:</Label>
+    <InputDate @bind-Value="EndDate" />
+
+    <Button Color="Color.Primary" Clicked="RefreshApplicantCollection">Поиск</Button>
+</Div>
+
+
+@code {
+    private IEnumerable<ApplicantDTO> Applicants { get; set; } = [];
+    private DateTime StartDate { get; set; } = DateTime.Today;
+    private DateTime EndDate { get; set; } = DateTime.Today;
+
+    private async Task RefreshApplicantCollection() => Applicants = await RecruitAgencyApi.GetAllApplicantsBySubmissionDateRange(StartDate.Date, EndDate.Date);
+}

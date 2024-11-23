@@ -1,0 +1,55 @@
+﻿@inject IRecruitAgencyApiWrapper RecruitAgencyApi
+
+<Modal @ref="PositionModal">
+    <ModalContent Centered>
+        <Form>
+            <ModalHeader>
+                <ModalTitle>Изменить должность</ModalTitle>
+                <CloseButton Clicked="ClosePositionModalAsync" />
+            </ModalHeader>
+
+            <ModalBody>
+                <Field>
+                    <FieldLabel>Раздел </FieldLabel>
+                    @if (PositionToUpdate != null)
+                    {
+                        <TextEdit @bind-Text="PositionToUpdate.Section" />
+                    }
+                </Field>
+                <Field>
+                    <FieldLabel>Должность</FieldLabel>
+                    @if (PositionToUpdate != null)
+                    {
+                        <TextEdit @bind-Text="PositionToUpdate.PositionName" />
+                    }
+                </Field>
+            </ModalBody>
+            <ModalFooter>
+                <Button Color="Color.Secondary" Clicked="ClosePositionModalAsync">Отмена</Button>
+                <Button Color="Color.Primary" Clicked="UpdatePositionAsync">Изменить</Button>
+            </ModalFooter>
+        </Form>
+    </ModalContent>
+</Modal>
+
+@code {
+    [Parameter]
+    public EventCallback OnPositionUpdated { get; set; }
+    [Parameter]
+    public int Id { get; set; }
+    [Parameter]
+    public PositionCreateDTO? PositionToUpdate { get; set; }
+
+    private Modal PositionModal { get; set; } = new();
+
+    public async Task Show() => await PositionModal.Show();
+
+    private async Task ClosePositionModalAsync() => await PositionModal.Hide();
+
+    private async Task UpdatePositionAsync()
+    {
+        await RecruitAgencyApi.UpdatePosition(Id, PositionToUpdate!);
+        await PositionModal.Hide();
+        await OnPositionUpdated.InvokeAsync();
+    }
+}

@@ -1,0 +1,55 @@
+﻿@inject IRecruitAgencyApiWrapper RecruitAgencyApi
+
+<Modal @ref="EmployerModal">
+    <ModalContent Centered>
+        <Form>
+            <ModalHeader>
+                <ModalTitle>Новый работодатель</ModalTitle>
+                <CloseButton Clicked="CloseEmployerModalAsync" />
+            </ModalHeader>
+
+            <ModalBody>
+                <Field>
+                    <FieldLabel>Название компании</FieldLabel>
+                    <TextEdit @bind-Text="NewEmployer.CompanyName" />
+                </Field>
+                <Field>
+                    <FieldLabel>ФИО контактного лица</FieldLabel>
+                    <TextEdit @bind-Text="@NewEmployer.ContactPersonName" />
+                </Field>
+                <Field>
+                    <FieldLabel>Телефон работодателя</FieldLabel>
+                    <TextEdit @bind-Text="@NewEmployer.CompanyNumber" />
+                </Field>
+            </ModalBody>
+            <ModalFooter>
+                <Button Color="Color.Secondary" Clicked="CloseEmployerModalAsync">Отмена</Button>
+                <Button Color="Color.Primary" Clicked="CreateEmployerAsync">Создать</Button>
+            </ModalFooter>
+        </Form>
+    </ModalContent>
+</Modal>
+
+@code {
+    [Parameter]
+    public EventCallback OnEmployerAdded { get; set; }
+
+    private Modal EmployerModal { get; set; } = new();
+    private EmployerCreateDTO NewEmployer { get; set; } = new();
+
+    public async Task Show() => await EmployerModal.Show();
+
+    private async Task CloseEmployerModalAsync()
+    {
+        NewEmployer = new();
+        await EmployerModal.Hide();
+    }
+
+    private async Task CreateEmployerAsync()
+    {
+        await RecruitAgencyApi.CreateEmployer(NewEmployer);
+        NewEmployer = new();
+        await EmployerModal.Hide();
+        await OnEmployerAdded.InvokeAsync();
+    }
+}

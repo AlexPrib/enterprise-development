@@ -1,0 +1,118 @@
+﻿@using Blazorise.DataGrid
+@inject IRecruitAgencyApiWrapper RecruitAgencyApi
+
+<Card>
+    <CardHeader>
+        <Row Class="justify-content-between">
+            <Column ColumnSize="ColumnSize.IsAuto">
+                <h4>Соискатели</h4>
+            </Column>
+            <Column ColumnSize="ColumnSize.IsAuto">
+                <Button Color="Color.Primary" Clicked="OpenCreateModal">
+                    Создать
+                </Button>
+            </Column>
+        </Row>
+    </CardHeader>
+    <CardBody>
+        <DataGrid TItem="ApplicantDTO"
+                  Data="Applicants"
+                  Responsive
+                  Striped>
+            <DataGridColumns>
+                <DataGridColumn Width="150px"
+                                TItem="ApplicantDTO"
+                                Field="@nameof(ApplicantDTO.Id)"
+                                Caption="Действия">
+                    <DisplayTemplate>
+                        <Dropdown>
+                            <DropdownToggle Color="Color.Primary">
+                                Действия
+                            </DropdownToggle>
+                            <DropdownMenu>
+                                <DropdownItem Clicked="() => OpenEditPageAsync(context)">
+                                    Редактировать
+                                </DropdownItem>
+                                <DropdownItem Clicked="() => DeleteApplicantAsync(context)">
+                                    Удалить
+                                </DropdownItem>
+                            </DropdownMenu>
+                        </Dropdown>
+                    </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridColumn TItem="ApplicantDTO"
+                                Field="@nameof(ApplicantDTO.Id)"
+                                Caption="Идентификатор соискателя">
+                </DataGridColumn>
+                <DataGridColumn TItem="ApplicantDTO"
+                                Field="@nameof(ApplicantDTO.FullName)"
+                                Caption="ФИО">
+                </DataGridColumn>
+                <DataGridColumn TItem="ApplicantDTO"
+                                Field="@nameof(ApplicantDTO.ContactInformation)"
+                                Caption="Телефон соискателя">
+                </DataGridColumn>
+                <DataGridColumn TItem="ApplicantDTO"
+                                Field="@nameof(ApplicantDTO.Experience)"
+                                Caption="Опыт">
+                </DataGridColumn>
+                <DataGridColumn TItem="ApplicantDTO"
+                                Field="@nameof(ApplicantDTO.Education)"
+                                Caption="Образование">
+                </DataGridColumn>
+                <DataGridColumn TItem="ApplicantDTO"
+                                Field="@nameof(ApplicantDTO.Salaries)"
+                                Caption="Ожидаемый уровень зарплаты">
+                </DataGridColumn>
+            </DataGridColumns>
+        </DataGrid>
+    </CardBody>
+</Card>
+
+<ApplicantCreateModal @ref="ApplicantCreateModal" OnApplicantAdded="@HandleApplicantListChanged" />
+<ApplicantUpdateModal @ref="ApplicantUpdateModal" ApplicantToUpdate="SelectedApplicant" Id="SelectedId" OnApplicantUpdated="@HandleApplicantListChanged" />
+
+
+@code {
+    private IEnumerable<ApplicantDTO> Applicants { get; set; } = [];
+    private int SelectedId { get; set; }
+    private ApplicantCreateDTO? SelectedApplicant { get; set; }
+    private ApplicantCreateModal ApplicantCreateModal { get; set; } = new();
+    private ApplicantUpdateModal ApplicantUpdateModal { get; set; } = new();
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        await RefreshApplicantCollection();
+        await base.OnInitializedAsync();
+    }
+
+    private async Task OpenEditPageAsync(ApplicantDTO context)
+    {
+        SelectedId = context.Id;
+        SelectedApplicant = new()
+            {
+                FullName = context.FullName,
+                ContactInformation = context.ContactInformation,
+                Experience = context.Experience,
+                Education = context.Education,
+                Salaries = context.Salaries
+            };
+        await ApplicantUpdateModal.Show();
+    }
+
+    private async Task DeleteApplicantAsync(ApplicantDTO context)
+    {
+        await RecruitAgencyApi.DeleteApplicant(context.Id);
+        await RefreshApplicantCollection();
+    }
+
+    private async Task HandleApplicantListChanged()
+    {
+        await RefreshApplicantCollection();
+    }
+
+    private async Task OpenCreateModal() => await ApplicantCreateModal.Show();
+
+    private async Task RefreshApplicantCollection() => Applicants = await RecruitAgencyApi.GetAllApplicants();
+}

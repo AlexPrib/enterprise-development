@@ -1,0 +1,63 @@
+﻿@inject IRecruitAgencyApiWrapper RecruitAgencyApi
+
+<Modal @ref="EmployerModal">
+    <ModalContent Centered>
+        <Form>
+            <ModalHeader>
+                <ModalTitle>Изменить работодателя</ModalTitle>
+                <CloseButton Clicked="CloseEmployerModalAsync" />
+            </ModalHeader>
+
+            <ModalBody>
+                <Field>
+                    <FieldLabel>Название компании</FieldLabel>
+                    @if (EmployerToUpdate != null)
+                    {
+                        <TextEdit @bind-Text="EmployerToUpdate.CompanyName" />
+                    }
+                </Field>
+                <Field>
+                    <FieldLabel>ФИО контактного лица</FieldLabel>
+                    @if (EmployerToUpdate != null)
+                    {
+                        <TextEdit @bind-Text="EmployerToUpdate.ContactPersonName" />
+                    }
+                </Field>
+                <Field>
+                    <FieldLabel>Телефон работодателя</FieldLabel>
+                    @if (EmployerToUpdate != null)
+                    {
+                        <TextEdit @bind-Text="EmployerToUpdate.CompanyNumber" />
+                    }
+                </Field>
+            </ModalBody>
+            <ModalFooter>
+                <Button Color="Color.Secondary" Clicked="CloseEmployerModalAsync">Отмена</Button>
+                <Button Color="Color.Primary" Clicked="UpdateEmployerAsync">Изменить</Button>
+            </ModalFooter>
+        </Form>
+    </ModalContent>
+</Modal>
+
+@code {
+    [Parameter]
+    public EventCallback OnEmployerUpdated { get; set; }
+    [Parameter]
+    public int Id { get; set; }
+    [Parameter]
+    public EmployerCreateDTO? EmployerToUpdate { get; set; }
+
+    private Modal EmployerModal { get; set; } = new();
+
+    public async Task Show() => await EmployerModal.Show();
+
+    private async Task CloseEmployerModalAsync() => await EmployerModal.Hide();
+
+    private async Task UpdateEmployerAsync()
+    {
+        await RecruitAgencyApi.UpdateEmployer(Id, EmployerToUpdate!);
+        await EmployerModal.Hide();
+        await OnEmployerUpdated.InvokeAsync();
+    }
+}
+

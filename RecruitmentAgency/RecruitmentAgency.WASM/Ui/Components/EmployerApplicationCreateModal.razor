@@ -1,0 +1,124 @@
+﻿@inject IRecruitAgencyApiWrapper RecruitAgencyApi
+
+<Modal @ref="EmployerApplicationModal">
+    <Alert Color="Color.Danger" @bind-Visible="@IsAlertVisible">
+        <AlertMessage>Список работодаетелй или должностей пуст!</AlertMessage>
+    </Alert>
+    <ModalContent Centered>
+        <Form>
+            <ModalHeader>
+                <ModalTitle>Новая заявка</ModalTitle>
+                <CloseButton Clicked="CloseEmployerApplicationModalAsync" />
+            </ModalHeader>
+
+            <ModalBody>
+                <Field>
+                    <FieldLabel>Дата подачи заявки</FieldLabel>
+                    <InputDate @bind-Value="NewEmployerApplication.SubmissionDate" />
+                </Field>
+                <Field>
+                    <FieldLabel>Выберите работодателя</FieldLabel>
+                    <Select TValue="int" @bind-SelectedValue="NewEmployerApplication.EmployerId">
+                        @if (Employers != null)
+                        {
+                            @foreach (var employer in Employers)
+                            {
+                                <SelectItem Value="@employer.Id">@($"{employer.Id} | {employer.CompanyName} | {employer.ContactPersonName} | {employer.CompanyNumber}")</SelectItem>
+                            }
+                        }
+                    </Select>
+                </Field>
+                <Field>
+                    <FieldLabel>Выберите должность</FieldLabel>
+                    <Select TValue="int" @bind-SelectedValue="NewEmployerApplication.PositionId">
+                        @if (Positions != null)
+                        {
+                            @foreach (var position in Positions)
+                            {
+                                <SelectItem Value="@position.Id">@($"{position.Id} | {position.Section} | {position.PositionName}")</SelectItem>
+                            }
+                        }
+                    </Select>
+                </Field>
+                <Field>
+                    <FieldLabel>Требование</FieldLabel>
+                    <TextEdit @bind-Text="NewEmployerApplication.Requirements" />
+                </Field>
+                <Field>
+                    <FieldLabel>Предлагаемый уровень зарплаты</FieldLabel>
+                    <InputNumber @bind-Value="NewEmployerApplication.OfferedSalary" />
+                </Field>
+            </ModalBody>
+            <ModalFooter>
+                <Button Color="Color.Secondary" Clicked="CloseEmployerApplicationModalAsync">Отмена</Button>
+                <Button Color="Color.Primary" Clicked="CreateEmployerApplicationAsync">Создать</Button>
+            </ModalFooter>
+        </Form>
+    </ModalContent>
+</Modal>
+
+@code {
+    [Parameter]
+    public EventCallback OnEmployerApplicationAdded { get; set; }
+
+    private Modal EmployerApplicationModal { get; set; } = new();
+    private EmployerApplicationCreateDTO NewEmployerApplication { get; set; } = new();
+    private IEnumerable<EmployerDTO>? Employers { get; set; }
+    private IEnumerable<PositionDTO>? Positions { get; set; }
+    private bool IsAlertVisible { get; set; } = false;
+
+    public async Task Show()
+    {
+        await LoadEmployersAsync();
+        await LoadPositionsAsync();
+        NewEmployerApplication.SubmissionDate = DateTime.Now;
+        await EmployerApplicationModal.Show();
+    }
+
+    private async Task CloseEmployerApplicationModalAsync()
+    {
+        IsAlertVisible = false;
+        NewEmployerApplication = new();
+        await EmployerApplicationModal.Hide();
+    }
+
+    private async Task CreateEmployerApplicationAsync()
+    {
+        // try
+        // {
+        await RecruitAgencyApi.CreateEmployerApplication(NewEmployerApplication);
+        await CloseEmployerApplicationModalAsync();
+        await OnEmployerApplicationAdded.InvokeAsync();
+        // }
+        // catch
+        // {
+        //     IsAlertVisible = true;
+        // }
+    }
+
+    private async Task LoadEmployersAsync()
+    {
+        Employers = await RecruitAgencyApi.GetAllEmployers();
+        if (Employers.FirstOrDefault() is null)
+        {
+            NewEmployerApplication.EmployerId = 0;
+        }
+        else
+        {
+            NewEmployerApplication.EmployerId = Employers.FirstOrDefault()!.Id;
+        }
+    }
+
+    private async Task LoadPositionsAsync()
+    {
+        Positions = await RecruitAgencyApi.GetAllPositions();
+        if (Positions.FirstOrDefault() is null)
+        {
+            NewEmployerApplication.PositionId = 0;
+        }
+        else
+        {
+            NewEmployerApplication.PositionId = Positions.FirstOrDefault()!.Id;
+        }
+    }
+}

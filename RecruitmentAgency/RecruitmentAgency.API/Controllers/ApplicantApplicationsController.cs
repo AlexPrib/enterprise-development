@@ -18,7 +18,7 @@ public class ApplicantApplicationsController(IEntityService<ApplicantApplicantDT
     /// <returns>Список всех заявок соискателей.</returns>
     /// <response code="200">Заявки успешно получены.</response>
     [HttpGet]
-    public ActionResult<IEnumerable<ApplicantApplication>> Get()
+    public ActionResult<IEnumerable<ApplicantApplicantDTO>> Get()
     {
         return Ok(service.GetAll());
     }
@@ -31,7 +31,7 @@ public class ApplicantApplicationsController(IEntityService<ApplicantApplicantDT
     /// <response code="200">Заявка успешно найдена.</response>
     /// <response code="404">Заявка с указанным идентификатором не найдена.</response>
     [HttpGet("{id}")]
-    public ActionResult<ApplicantApplication> Get(int id)
+    public ActionResult<ApplicantApplicantDTO> Get(int id)
     {
         var applicantApplication = service.GetById(id);
         if (applicantApplication == null)
@@ -57,7 +57,7 @@ public class ApplicantApplicationsController(IEntityService<ApplicantApplicantDT
             return BadRequest("Не удалось создать заявку. Проверьте данные.");
         }
 
-        return Ok();
+        return Ok(result);
     }
 
     /// <summary>
@@ -69,14 +69,14 @@ public class ApplicantApplicationsController(IEntityService<ApplicantApplicantDT
     /// <response code="200">Заявка успешно обновлена.</response>
     /// <response code="404">Заявка с указанным идентификатором не найдена.</response>
     [HttpPut]
-    public ActionResult Put(int id, ApplicantApplicationCreateDTO updatedApplicantApplication)
+    public ActionResult<ApplicantApplicantDTO> Put(int id, ApplicantApplicationCreateDTO updatedApplicantApplication)
     {
         var result = service.Update(id, updatedApplicantApplication);
         if (result == null)
         {
             return NotFound("Заявка не найдена.");
         }
-        return Ok();
+        return Ok(result);
     }
 
     /// <summary>

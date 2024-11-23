@@ -1,0 +1,102 @@
+﻿@using Blazorise.DataGrid
+@inject IRecruitAgencyApiWrapper RecruitAgencyApi
+
+<Card>
+    <CardHeader>
+        <Row Class="justify-content-between">
+            <Column ColumnSize="ColumnSize.IsAuto">
+                <h4>Должности</h4>
+            </Column>
+            <Column ColumnSize="ColumnSize.IsAuto">
+                <Button Color="Color.Primary" Clicked="OpenCreateModal">
+                    Создать
+                </Button>
+            </Column>
+        </Row>
+    </CardHeader>
+    <CardBody>
+        <DataGrid TItem="PositionDTO"
+                  Data="Positions"
+                  Responsive
+                  Striped>
+            <DataGridColumns>
+                <DataGridColumn Width="150px"
+                                TItem="PositionDTO"
+                                Field="@nameof(PositionDTO.Id)"
+                                Caption="Действия">
+                    <DisplayTemplate>
+                        <Dropdown>
+                            <DropdownToggle Color="Color.Primary">
+                                Действия
+                            </DropdownToggle>
+                            <DropdownMenu>
+                                <DropdownItem Clicked="() => OpenEditPageAsync(context)">
+                                    Редактировать
+                                </DropdownItem>
+                                <DropdownItem Clicked="() => DeletePositionAsync(context)">
+                                    Удалить
+                                </DropdownItem>
+                            </DropdownMenu>
+                        </Dropdown>
+                    </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridColumn TItem="PositionDTO"
+                                Field="@nameof(EmployerDTO.Id)"
+                                Caption="Идентификатор должности">
+                </DataGridColumn>
+                <DataGridColumn TItem="PositionDTO"
+                                Field="@nameof(PositionDTO.Section)"
+                                Caption="Раздел">
+                </DataGridColumn>
+                <DataGridColumn TItem="PositionDTO"
+                                Field="@nameof(PositionDTO.PositionName)"
+                                Caption="Должность">
+                </DataGridColumn>
+            </DataGridColumns>
+        </DataGrid>
+    </CardBody>
+</Card>
+
+<PositionCreateModal @ref="PositionCreateModal" OnPositionAdded="@HandlePositionListChanged" />
+<PositionUpdateModal @ref="PositionUpdateModal" PositionToUpdate="SelectedPosition" Id="SelectedId" OnPositionUpdated="@HandlePositionListChanged" />
+
+
+@code {
+    private IEnumerable<PositionDTO> Positions { get; set; } = [];
+    private int SelectedId { get; set; }
+    private PositionCreateDTO? SelectedPosition { get; set; }
+    private PositionCreateModal PositionCreateModal { get; set; } = new();
+    private PositionUpdateModal PositionUpdateModal { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await RefreshPositionCollection();
+        await base.OnInitializedAsync();
+    }
+
+    private async Task OpenEditPageAsync(PositionDTO context)
+    {
+        SelectedId = context.Id;
+        SelectedPosition = new()
+            {
+                Section = context.Section,
+                PositionName = context.PositionName,
+            };
+        await PositionUpdateModal.Show();
+    }
+
+    private async Task DeletePositionAsync(PositionDTO context)
+    {
+        await RecruitAgencyApi.DeletePosition(context.Id);
+        await RefreshPositionCollection();
+    }
+
+    private async Task HandlePositionListChanged()
+    {
+        await RefreshPositionCollection();
+    }
+
+    private async Task OpenCreateModal() => await PositionCreateModal.Show();
+
+    private async Task RefreshPositionCollection() => Positions = await RecruitAgencyApi.GetAllPositions();
+}
