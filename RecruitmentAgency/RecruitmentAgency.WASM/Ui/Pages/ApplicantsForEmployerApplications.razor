@@ -29,7 +29,6 @@
     </CardBody>
 </Card>
 
-
 <Div>
     <label>Заявка:</label>
     <Select TValue="int" @bind-SelectedValue="employerApplicationId">
@@ -40,14 +39,6 @@
     </Select>
     <Button Color="Color.Primary" Clicked="RefreshAppCollection">Поиск</Button>
 </Div>
-@* <Div>
-    <label>Индентификатор заявки:</label>
-    <InputNumber @bind-Value="employerApplicationId" />
-
-    <Button Color="Color.Primary" Clicked="RefreshProductsCollection">Поиск</Button>
-</Div> *@
-
-
 
 @code {
     private IEnumerable<ApplicantsForEmployerApplicationDTO> Applicants { get; set; } = [];
