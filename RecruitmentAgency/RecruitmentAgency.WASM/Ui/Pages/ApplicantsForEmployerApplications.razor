@@ -53,6 +53,14 @@
     protected override async Task OnInitializedAsync()
     {
         EmployerIdApp = await RecruitAgencyApi.GetAllEmployerApplications();
+        if (EmployerIdApp.FirstOrDefault() is null)
+        {
+            employerApplicationId = 0;
+        }
+        else
+        {
+            employerApplicationId = EmployerIdApp.FirstOrDefault()!.Id;
+        }
         await base.OnInitializedAsync();
     }
 }
