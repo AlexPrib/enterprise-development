@@ -46,7 +46,7 @@ namespace RecruitmentAgency.API.Controllers
         /// <response code="200">Список соискателей успешно возвращён.</response>
         [HttpGet("applicants/employer-application/{employerApplicationId}")]
         public ActionResult<IEnumerable<ApplicantsForEmployerApplicationDTO>> GetApplicantsForEmployerApplication(int employerApplicationId)
-        {;
+        {
             return Ok(service.GetApplicantsForEmployerApplication(employerApplicationId));
         }
 

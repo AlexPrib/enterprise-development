@@ -98,7 +98,7 @@ public class QueryService(IEntityRepository<ApplicantApplication> applicantappli
     public List<TopEmployerDTO> GetTopEmployersByApplications()
     {
         var topEmployers = employerapplicationRepository.GetAll()
-            .GroupBy(employerApp => employerApp.Id)
+            .GroupBy(employerApp => employerApp.Employer.Id)
             .Select(group => new TopEmployerDTO
             {
                 EmployerId = group.Key,

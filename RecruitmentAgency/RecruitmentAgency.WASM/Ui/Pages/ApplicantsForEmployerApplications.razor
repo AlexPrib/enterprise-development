@@ -29,20 +29,39 @@
     </CardBody>
 </Card>
 
+
 <Div>
+    <label>Заявка:</label>
+    <Select TValue="int" @bind-SelectedValue="employerApplicationId">
+        @foreach (var application in EmployerIdApp)
+        {
+            <SelectItem Value="@application.Id">@($"{application.Id}")</SelectItem>
+        }
+    </Select>
+    <Button Color="Color.Primary" Clicked="RefreshAppCollection">Поиск</Button>
+</Div>
+@* <Div>
     <label>Индентификатор заявки:</label>
-    <TextEdit @bind-Value="employerApplicationId" />
+    <InputNumber @bind-Value="employerApplicationId" />
 
     <Button Color="Color.Primary" Clicked="RefreshProductsCollection">Поиск</Button>
-</Div>
+</Div> *@
+
+
 
 @code {
     private IEnumerable<ApplicantsForEmployerApplicationDTO> Applicants { get; set; } = [];
+    private IEnumerable<EmployerApplicationDTO> EmployerIdApp { get; set; } = [];
     private int employerApplicationId { get; set; }
 
-    private async Task RefreshProductsCollection()
+    private async Task RefreshAppCollection()
     {
         Applicants = await RecruitAgencyApi.GetApplicantsForEmployerApplication(employerApplicationId);
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        EmployerIdApp = await RecruitAgencyApi.GetAllEmployerApplications();
         await base.OnInitializedAsync();
     }
 }
